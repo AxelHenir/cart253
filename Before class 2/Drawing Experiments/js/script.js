@@ -31,6 +31,7 @@ function setup() {
   noStroke();
 
   //Now, let's draw my alien's body. I want a circular head
+
   fill(bodyColorDark);
   circle(500,500,500); // Shadow body
 
@@ -40,16 +41,19 @@ function setup() {
   fill(bodyColor);
   ellipse(485,485,480,495); // Foreground body
 
-  // Here's how I will draw my eyes. I think I wanna try to make this a class so I can paste complete eyeballs where I want.
-  let eye1 = new Eyeball(300, 300);
-
   //Now, let's make some tentacles!
   fill(bodyColor);
   arc(315,570,90,580,0,PI); //Leftmost
   arc(500,620,90,500,0,PI); //central
   arc(665,560,90,650,0,PI); //rightmost
 
-
+  // Here's how I will draw my eyes. I think I wanna try to make this a class so I can paste complete eyeballs where I want.
+  let eye1 = new Eyeball(330, 400);
+  let eye2 = new Eyeball(595, 310);
+  let eye3 = new Eyeball(365, 570);
+  let eye4 = new Eyeball(440, 290);
+  let eye5 = new Eyeball(510, 460);
+  let eye6 = new Eyeball(660, 550);
 
 
 }

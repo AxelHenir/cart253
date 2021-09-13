@@ -1,8 +1,10 @@
 class Eyeball{
-  constructor(xpos, ypos,){
+  constructor(xpos, ypos){
+    let eyeColor = color(250, 251, 252);
+    let pupilColor = color(28, 30, 31);
     fill(eyeColor);
-    circle(xpos,ypos,120);
+    circle(xpos,ypos,125);
     fill(pupilColor);
-    ellipse(xpos,ypos,40,55);
+    ellipse((xpos-30),ypos,40,55);
   }
 }
