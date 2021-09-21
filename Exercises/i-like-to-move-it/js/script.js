@@ -10,8 +10,8 @@ Alex Henri
 Description of preload
 */
 function preload() {
-
 }
+let CANVAS_SIZE = 1000;
 
 let square1 =     {x: 0, y:0,  size: 0,  speed: 0,  fill: 255,  moving: false,  terminal: 0,}
 let circle1 =     {x: 0, y:0, size:0, speed:0, fill: 255, moving: false, terminal: 0,}
@@ -21,10 +21,18 @@ let triangle1 =   {x1:0, x2:0, x3: 0, y1:0, y2:0, y3:0, speed: 0, fill: 255, mov
 let r = 0;
 let TUNING =9;
 let shapes = [1,2,3,4,5];
+let BASE_SIZE = 140;
+let BASE_SPEED = 1;
+let i=0;
+
+
+
+
 /**
 Initial drawing in program
 */
 function setup() {
+  angleMode(DEGREES);
   strokeWeight(5);
   createCanvas(1000,1000);
 }
@@ -52,41 +60,41 @@ if(r>TUNING){ // If we generate a shape,
     case 1: // [1] - Square generator
       square1.y=random(0,width); // Spawn on left of page, go right
       square1.x=0;
-      square1.size=(random(-50,50)+200);
+      square1.size=(BASE_SIZE*map(mouseY,0,height,1,1.5));
       square1.moving = true;
-      square1.speed=random(1,3);
+      square1.speed=(BASE_SPEED*map(mouseX,0,width,1,5));
       square1.terminal =((width/2)+random(0,(width/2)));
       break;
 
     case 2: // [2] - Circle Generator
       circle1.y=random(0,height); // Spawn on right of page, go left
       circle1.x=width;
-      circle1.size=(random(-50,50)+200);
+      circle1.size=(BASE_SIZE*map(mouseY,0,height,1,1.6));
       circle1.moving = true;
-      circle1.speed=random(-3,-1);
+      circle1.speed=(BASE_SPEED*(-1)*map(mouseX,0,width,1,5));
       circle1.terminal =((width/2)-random(0,(width/2)));
       break;
 
     case 3: // [3] - Rectangle Generator
       rectangle1.x=random(0,width); // Spawn at top of page, go down
       rectangle1.y= 0;
-      rectangle1.w= map(mouseX,0,width,50,150);
-      rectangle1.h= map(mouseY,0,height,50,150);
+      rectangle1.w= (BASE_SIZE*map(mouseY,0,height,1,1.3));
+      rectangle1.h= (BASE_SIZE*map(mouseY,0,height,1,1.3)*random(0.3,1.7));
       rectangle1.moving = true;
-      rectangle1.speed=random(1,3);
+      rectangle1.speed=(BASE_SPEED*map(mouseX,0,width,1,5));
       rectangle1.terminal =((width/2)+random(0,(width/2)));
       break;
 
     case 4: // [4] - Triangle Generator
       triangle1.x1=random(0,width); // Spawn at bottom of page, go up
       triangle1.y1=height;
-      triangle1.x2=(triangle1.x1 + random(50,250));
+      triangle1.x2=(triangle1.x1 + (BASE_SIZE*map(mouseY,0,height,1,1.7)));
       triangle1.y2=height;
       triangle1.x3=random(triangle1.x1,triangle1.x2);
-      triangle1.y3=(height - random(50, 250));
+      triangle1.y3=(700+random(0,250));
 
       triangle1.moving = true;
-      triangle1.speed=random(-3,-1);
+      triangle1.speed=(BASE_SPEED*(-1)*map(mouseX,0,width,1,5));;
       triangle1.terminal =((width/2)-random(0,(width/2)));
       break;
 
@@ -95,6 +103,7 @@ if(r>TUNING){ // If we generate a shape,
   }
 
 }
+
 
 if(square1.moving){
   square1.x += square1.speed; // Move the shape
