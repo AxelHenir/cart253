@@ -1,165 +1,221 @@
 /**
 CART 253 Exercise 1: I like to move it
 Alex Henri
+
+This program will occasionally generate a shape on the bounary of the square canvas.
+This shape will be given inate qualities based mouse position within the canvas.
+Random chance will also be used when deciding the qualities of the shapes.
+
+Once a shape is generated, it will travel towards the opposite side of the canvas.
+shapes are generated with a point called the terminal point.
+If a shape reaches its terminal point, it will stop.
+For the shape to move again, it must be generated again.
+
+Generated shapes can be influenced through mouse position.
+Fill, Stroke, Size and Rotation can all be influenced live.
 */
 
 "use strict";
-
-
-/**
-Description of preload
-*/
 function preload() {
 }
-let CANVAS_SIZE = 1000;
 
-let square1 =     {x: 0, y:0,  size: 0,  speed: 0,  fill: 255,  moving: false,  terminal: 0,}
-let circle1 =     {x: 0, y:0, size:0, speed:0, fill: 255, moving: false, terminal: 0,}
-let rectangle1 =  {x: 0, y:0,  w: 0, h:0,  speed: 0,  fill: 255,  moving: false,  terminal: 0,}
-let triangle1 =   {x1:0, x2:0, x3: 0, y1:0, y2:0, y3:0, speed: 0, fill: 255, moving: false, terminal: 0,}
+let CANVAS_SIZE = 1000; // This value controls the size of the canvas (in pixels). The canvas is square.
+
+let shapes = [1,2,3,4];
+let square1 =     {x: 0, y:0,  size: 0,  speed: 0,  fill: 255,  moving: false,  terminal: 0,rotation:0,}
+let circle1 =     {x: 0, y:0, size:0, speed:0, fill: 255, moving: false, terminal: 0,rotation:0,}
+let rectangle1 =  {x: 0, y:0,  w: 0, h:0,  speed: 0,  fill: 255,  moving: false,  terminal: 0,rotation:0,}
+let triangle1 =   {x1:0, x2:0, x3: 0, y1:0, y2:0, y3:0, speed: 0, fill: 255, moving: false, terminal: 0,rotation:0,}
 
 let r = 0;
-let TUNING =9;
-let shapes = [1,2,3,4,5];
-let BASE_SIZE = 140;
-let BASE_SPEED = 1;
-let i=0;
+let temp =0;
 
+let TUNING =90; // The % Chance that a shape spawns per 60th of a second.
+let BASE_SIZE = 140; // The base size all shapes share. Scaling happens off of this value.
+let BASE_SPEED = 1; // The base speed of all shapes. Scaling happens off of this value.
+let ROTATE_STRENGTH =0.1; // Base rotation strength. Scaling happens off of this value.
 
-
-
-/**
-Initial drawing in program
+/*
+Initial drawing in program =====================================================
 */
 function setup() {
   angleMode(DEGREES);
-  strokeWeight(5);
-  createCanvas(1000,1000);
+  colorMode(HSB);
+  createCanvas(CANVAS_SIZE,CANVAS_SIZE);
 }
-
-
-/**
-draw() is called 60 times per second.
-
-My draw function will have a chance to randomly generate a shape.
-The shapes will travel from their spawn to a random point.
-When they reach the point, they stop moving.
-If the program generates a shape of that kind again, it will respawn said shape
-
-Moving the mouse will impact the qualities of the shapes which spawn in
-Moving the mouse will also impact qualities of the shapes.
-
+/*
+Drawing function, called every 60th of a second. ===============================
 */
 function draw() {
 
-r=random(0,10); //Choose a random number for this cycle
+r=random(0,100); // Choose a random number for this frame.
 
-if(r>TUNING){ // If we generate a shape,
-  switch(random(shapes)){ // Find what to do,
+// GENERATION ==================================================================
+
+if(r>TUNING){
+  switch(random(shapes)){
 
     case 1: // [1] - Square generator
-      square1.y=random(0,width); // Spawn on left of page, go right
+      square1.y=random(0,CANVAS_SIZE);
       square1.x=0;
-      square1.size=(BASE_SIZE*map(mouseY,0,height,1,1.5));
+      square1.size=(BASE_SIZE*random(0.8,1.2)*map(mouseY,0,height,1,1.5));
       square1.moving = true;
-      square1.speed=(BASE_SPEED*map(mouseX,0,width,1,5));
-      square1.terminal =((width/2)+random(0,(width/2)));
+      square1.speed=(BASE_SPEED*map(mouseX,0,CANVAS_SIZE,1,5));
+      square1.speed=constrain(square1.speed,1,5);
+      square1.terminal =((CANVAS_SIZE/2)+random(0,(CANVAS_SIZE/2)));
+      square1.rotation=0;
       break;
 
     case 2: // [2] - Circle Generator
-      circle1.y=random(0,height); // Spawn on right of page, go left
-      circle1.x=width;
-      circle1.size=(BASE_SIZE*map(mouseY,0,height,1,1.6));
+      circle1.y=random(0,CANVAS_SIZE);
+      circle1.x=CANVAS_SIZE;
+      circle1.size=(BASE_SIZE*random(0.8,1.2)*map(mouseY,0,CANVAS_SIZE,1.1,1.7));
+
       circle1.moving = true;
-      circle1.speed=(BASE_SPEED*(-1)*map(mouseX,0,width,1,5));
-      circle1.terminal =((width/2)-random(0,(width/2)));
+      circle1.speed=(BASE_SPEED*(-1)*map(mouseX,0,CANVAS_SIZE,1,5));
+      circle1.speed=constrain(circle1.speed,-5,-1);
+      circle1.terminal =((CANVAS_SIZE/2)-random(0,(CANVAS_SIZE/2)));
+      circle1.rotation=0;
       break;
 
     case 3: // [3] - Rectangle Generator
-      rectangle1.x=random(0,width); // Spawn at top of page, go down
+      rectangle1.x=random(0,CANVAS_SIZE);
       rectangle1.y= 0;
-      rectangle1.w= (BASE_SIZE*map(mouseY,0,height,1,1.3));
-      rectangle1.h= (BASE_SIZE*map(mouseY,0,height,1,1.3)*random(0.3,1.7));
+      rectangle1.w= (BASE_SIZE*random(0.8,1.2)*map(mouseY,0,CANVAS_SIZE,1,1.3));
+      rectangle1.h= (BASE_SIZE*random(0.8,1.2)*map(mouseY,0,CANVAS_SIZE,1,1.3)*random(0.3,1.7));
+
       rectangle1.moving = true;
-      rectangle1.speed=(BASE_SPEED*map(mouseX,0,width,1,5));
-      rectangle1.terminal =((width/2)+random(0,(width/2)));
+      rectangle1.speed=(BASE_SPEED*map(mouseX,0,CANVAS_SIZE,1,5));
+      rectangle1.speed=constrain(rectangle1.speed,1,5);
+      rectangle1.terminal =((CANVAS_SIZE/2)+random(0,(CANVAS_SIZE/2)));
+      rectangle1.rotation=0;
       break;
 
     case 4: // [4] - Triangle Generator
-      triangle1.x1=random(0,width); // Spawn at bottom of page, go up
-      triangle1.y1=height;
-      triangle1.x2=(triangle1.x1 + (BASE_SIZE*map(mouseY,0,height,1,1.7)));
-      triangle1.y2=height;
+      triangle1.x1=random(0,CANVAS_SIZE);
+      triangle1.y1=CANVAS_SIZE;
+      triangle1.x2=(triangle1.x1 + 100+(BASE_SIZE*random(1,1.3)*map(mouseY,0,CANVAS_SIZE,1,1.5)));
+      triangle1.y2=CANVAS_SIZE;
       triangle1.x3=random(triangle1.x1,triangle1.x2);
-      triangle1.y3=(700+random(0,250));
+      triangle1.y3=CANVAS_SIZE-random(map(mouseY,0,CANVAS_SIZE,100,0),220);
 
       triangle1.moving = true;
-      triangle1.speed=(BASE_SPEED*(-1)*map(mouseX,0,width,1,5));;
-      triangle1.terminal =((width/2)-random(0,(width/2)));
-      break;
-
-    case 5: // [5] - Text Generator
+      triangle1.speed=(BASE_SPEED*(-1)*map(mouseX,0,CANVAS_SIZE,1,5));
+      triangle1.speed=constrain(triangle1.speed,-5,-1);
+      triangle1.terminal =((CANVAS_SIZE/2)-random(0,(CANVAS_SIZE/2)));
+      triangle1.rotation=0;
       break;
   }
 
 }
 
+// PRINTING ====================================================================
 
-if(square1.moving){
-  square1.x += square1.speed; // Move the shape
-  square1.x = constrain(square1.x,0,square1.terminal); // Constrain the shape
+{ //Square Affairs--------------------------------------------------------------
 
-  square1.fill= map(mouseX,0,width,0,255); // Change the color
-  fill(square1.fill);
-
-  square(square1.x,square1.y,square1.size); // Draw the shape
-
-  if (square1.x >= square1.terminal){ // Stop the shape from being drawn again if it reached the end
-    square1.moving = false;
+  rotate(square1.rotation); // Rotation
+  if (mouseX<0.3*CANVAS_SIZE){
+    square1.rotation-=ROTATE_STRENGTH;
   }
-} // Redraw square if its moving
-if(circle1.moving){
-  circle1.x += circle1.speed; // Move the shape
-  circle1.x = constrain(circle1.x,circle1.terminal,width); // Constrain the shape
+  else if (mouseX>0.7*CANVAS_SIZE){
+    square1.rotation+=ROTATE_STRENGTH;
+  }
 
-  circle1.fill= map(mouseX,0,width,0,255); // Change the color
-  fill(circle1.fill);
+  if(square1.moving){ // Print if the shape is moving.
+    square1.x += square1.speed;  // Adjust position according to speed.
+    square1.x = constrain(square1.x,0,square1.terminal); // Constrain position to terminal.
 
-  circle(circle1.x,circle1.y,circle1.size); // Draw the shape
+    fill(color(map(mouseY,0,CANVAS_SIZE,6,349), map(mouseY,0,CANVAS_SIZE,100,35), map(mouseY,0,CANVAS_SIZE,73,85))); // Obtain and apply color.
+    stroke(map(mouseY,0,CANVAS_SIZE,6,349),50,map(mouseY,0,CANVAS_SIZE,15,85)); // Obtain and apply stroke color.
 
-  if (circle1.x <= circle1.terminal){ // Stop the shape from being drawn again if it reached the end
-    circle1.moving = false;
+    square(square1.x,square1.y,square1.size*(map(mouseY,0,CANVAS_SIZE,1,1.2))); // Draw the shape.
+    rotate(-1*square1.rotation);  // Undo rotation for next shape.
+
+    if (square1.x >= square1.terminal){
+      square1.moving = false; // Stop the shape from moving if it reaches terminal.
     }
-} // Redraw circle if its moving
-if(rectangle1.moving){
-  rectangle1.y += rectangle1.speed; // Move the shape
-  rectangle1.y = constrain(rectangle1.y,0,rectangle1.terminal); // Constrain the shape
+  }
+}
 
-  rectangle1.fill= map(mouseX,0,width,0,255); // Change the color
-  fill(rectangle1.fill);
+{ // Rectangle Stuff -----------------------------------------------------------
 
-  rect(rectangle1.x,rectangle1.y,rectangle1.w, rectangle1.h); // Draw the shape
+  rotate(rectangle1.rotation); // Rotation.
+  if (mouseX<0.3*CANVAS_SIZE){
+    rectangle1.rotation-=ROTATE_STRENGTH;
+  }
+  else if (mouseX>0.7*CANVAS_SIZE){
+    rectangle1.rotation+=ROTATE_STRENGTH;
+  }
 
-  if (rectangle1.y >= rectangle1.terminal){ // Stop the shape from being drawn again if it reached the end
-    rectangle1.moving = false;
+  if(rectangle1.moving){ // Print if the shape is moving.
+    rectangle1.y += rectangle1.speed;  // Adjust position according to speed.
+    rectangle1.y = constrain(rectangle1.y,0,rectangle1.terminal); // Constrain position to terminal.
+
+    fill(map(mouseY,0,CANVAS_SIZE,203,32),32, 95); // Obtain and apply color.
+    stroke(map(mouseY,0,CANVAS_SIZE,203,32),50,map(mouseY,0,CANVAS_SIZE,15,85)); // Obtain and apply stroke color.
+
+    rect(rectangle1.x,rectangle1.y,rectangle1.w*(map(mouseX,0,CANVAS_SIZE,1,1.2)),rectangle1.h*(map(mouseX,0,CANVAS_SIZE,1,1.2))); // Draw the shape.
+    rotate(-1*rectangle1.rotation);  // Undo rotation for next shape.
+
+    if (rectangle1.y >= rectangle1.terminal){
+      rectangle1.moving = false; // Stop the shape from moving if it reaches terminal.
     }
-} // Redraw rectangle if its moving
-if(triangle1.moving){
+  }
+}
 
-  triangle1.y1 += triangle1.speed; // Move the shape
-  triangle1.y2 += triangle1.speed;
-  triangle1.y3 += triangle1.speed;
+{ // Circle Quirks -------------------------------------------------------------
 
-  triangle1.y3 = constrain(triangle1.y3,triangle1.terminal,height); // Constrain the shape
+rotate(circle1.rotation); // Rotation.
+if (mouseX<0.3*CANVAS_SIZE){
+  circle1.rotation+=ROTATE_STRENGTH;
+}
+else if (mouseX>0.7*CANVAS_SIZE){
+  circle1.rotation-=ROTATE_STRENGTH;
+}
 
-  triangle1.fill= map(mouseX,0,width,0,255); // Change the color
-  fill(triangle1.fill);
+if(circle1.moving){ // Print if the shape is moving.
+  circle1.x += circle1.speed; // Adjust position according to speed.
+  circle1.x = constrain(circle1.x,circle1.terminal,width); // Constrain position to terminal.
 
-  triangle(triangle1.x1,triangle1.y1,triangle1.x2,triangle1.y2,triangle1.x3,triangle1.y3); // Draw the shape
+  fill(map(mouseY,0,CANVAS_SIZE,203,32), map(mouseY,0,CANVAS_SIZE,92,12), map(mouseY,0,CANVAS_SIZE,15,95)); // Obtain and apply color.
+  stroke(map(mouseY,0,CANVAS_SIZE,203,32),50,map(mouseY,0,CANVAS_SIZE,15,85)); // Obtain and apply stroke color.
 
-  if (triangle1.y3 <= triangle1.terminal){ // Stop the shape from being drawn again if it reached the end
-    triangle1.moving = false;
+  circle(circle1.x,circle1.y,circle1.size*(map(mouseX,0,CANVAS_SIZE,1,1.4))); // Draw the shape.
+  rotate(-1*circle1.rotation); // Undo rotation for next shape.
+
+  if (circle1.x <= circle1.terminal){
+    circle1.moving = false; // Stop the shape from moving if it reaches terminal.
     }
-} // Redraw triangle if its moving
+  }
+}
+
+{ // Triangle, I might mangle --------------------------------------------------
+
+rotate(triangle1.rotation); // Rotation.
+if (mouseX<0.3*CANVAS_SIZE){
+  triangle1.rotation+=ROTATE_STRENGTH;
+}
+else if (mouseX>0.7*CANVAS_SIZE){
+  triangle1.rotation-=ROTATE_STRENGTH;
+}
+
+if(triangle1.moving){ // Print if the shape is moving.
+  triangle1.y1 += triangle1.speed; // Adjust position according to speed.
+  triangle1.y2 += triangle1.speed; // Adjust position according to speed.
+  triangle1.y3 += triangle1.speed; // Adjust position according to speed.
+
+  triangle1.y3 = constrain(triangle1.y3,triangle1.terminal,height); // Constrain position to terminal.
+
+  fill(map(mouseY,0,CANVAS_SIZE,200,168),map(mouseY,0,CANVAS_SIZE,52,21),map(mouseY,0,CANVAS_SIZE,66,76)); // Obtain and apply color.
+  stroke(map(mouseY,0,CANVAS_SIZE,200,168),50,map(mouseY,0,CANVAS_SIZE,15,85)); // Obtain and apply stroke color.
+
+  triangle(triangle1.x1,triangle1.y1,triangle1.x2*(map(mouseX,0,CANVAS_SIZE,1,1.2)),triangle1.y2,triangle1.x3,triangle1.y3*(map(mouseX,0,CANVAS_SIZE,0.8,1))); // Draw the shape.
+  rotate(-1*triangle1.rotation); // Undo rotation for next shape.
+
+  if (triangle1.y3 <= triangle1.terminal){
+    triangle1.moving = false; // Stop the shape from moving if it reaches terminal.
+    }
+  }
+}
 
 }
