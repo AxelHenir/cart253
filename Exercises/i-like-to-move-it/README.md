@@ -1,10 +1,5 @@
 # Alex Henri CART 253 Exercise 1: I like to move it
 
-#Instructions
-
-CART 253 Exercise 1: I like to move it
-Alex Henri
-
 This program will occasionally generate a shape on the bounary of the square canvas.
 This shape will be given inate qualities based mouse position within the canvas.
 Random chance will also be used when deciding the qualities of the shapes.
