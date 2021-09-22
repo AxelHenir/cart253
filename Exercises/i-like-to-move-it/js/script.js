@@ -16,6 +16,7 @@ Fill, Stroke, Size and Rotation can all be influenced live.
 */
 
 "use strict";
+
 function preload() {
 }
 
@@ -42,6 +43,10 @@ function setup() {
   angleMode(DEGREES);
   colorMode(HSB);
   createCanvas(CANVAS_SIZE,CANVAS_SIZE);
+  textAlign(CENTER);
+  textSize(38);
+  textStyle(BOLD);
+  text('WELCOME',CANVAS_SIZE/2,CANVAS_SIZE/2);
 }
 /*
 Drawing function, called every 60th of a second. ===============================
