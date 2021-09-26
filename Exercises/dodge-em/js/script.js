@@ -1,5 +1,14 @@
-// Alex Henri - 40108348
-/* */
+// Alex Henri
+/*
+Exercise 4: Dodge-Em
+
+My program will utilize the activity 4 code: COVID19 as its basis.
+I have made the following additions:
+I have improved onthe following functions:
+
+to do:
+-
+*/
 
 "use strict";
 
