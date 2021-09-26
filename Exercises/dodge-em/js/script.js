@@ -25,11 +25,25 @@ to do:
 
 "use strict";
 
-let covid19 = {x:0,y:250,size:100,vx:0,vy:0,speed:5,fill:{r:255,g:0,b:0}};
+//let covid19 = {x:0,y:250,size:100,vx:0,vy:0,speed:5,fill:{r:255,g:0,b:0}};
 let staticAmount = 0;
 let difficulty = {cSpeed:1, cSize:1, growthRate:1};
-let user = {x:0,y:0,size:100,fill:255,vx:5,vy:5};
+let user = {x:400,y:400,size:100,fill:255,vx:5,vy:5,hp:100,sh:100,dash:0};
 let covidHold = new Array();
+let spawnNewCovid = true;
+let dashStacks = 3;
+let DASH_LAG_MASTER = 250;
+let dashLag  = 0;
+
+function covid19(){
+  this.x=0;
+  this.y=0;
+  this.size=100;
+  this.vx=0;
+  this.vy=0;
+  this.speed=5;
+  this.fill={r:255,g:0,b:0};
+}
 
 function preload(){}
 
@@ -49,12 +63,34 @@ function draw() {
     stroke(255);
     point(x,y);
   }
-  noStroke(); // Printing Covid19 + User =======================================
+  noStroke();
 
-covidHold.push(new covid19());
-for (var i=0; i<covidHold.length; i++){ //Move Covid(s)
-  covidHold[i].x =+covidHold[i].vx;
+if(spawnNewCovid){
+  covidHold.push(new covid19());
+  spawnNewCovid=false;
+}
+else{
+
+}
+
+for (var i=0; i<covidHold.length; i++){ // For each active covid,
+  covidHold[i].x =+covidHold[i].vx; // Move them,
   covidHold[i].y =+covidHold[i].vy;
+
+  if (covidHold[i].x > windowWidth){ // Respawn them,
+    covidHold[i].x = 0;
+    covidHold[i].y = random(0,windowHeight);
+  }
+
+  fill(covidHold[i].fill.r,covidHold[i].fill.g,covidHold[i].fill.b); // Find their color,
+
+  ellipse(covidHold[i].x,covidHold[i].y,covidHold[i].size); // Draw them,
+
+  let d = dist(covidHold[i].x,covidHold[i].y,user.x,user.y); // Check for death,
+  if (d < (covidHold[i].size/2 + user.size/2)){
+    noLoop();
+  }
+
 }
 
   if(keyIsDown(87)){ // W - Up
@@ -69,26 +105,26 @@ for (var i=0; i<covidHold.length; i++){ //Move Covid(s)
   if(keyIsDown(68)){ // D - Right
     user.x+=user.vy;
   }
-
+  if(keyIsDown(32)){ // Space - Dash
+      console.log("I dahsed.");
+    if(dashStacks!=0){
+      dashStacks--;
+    }
+    if (dashLag==0){
+      let dashLag = DASH_LAG_MASTER;
+    }
+  }
   constrain(user.x,0,windowWidth); // Constrain user to window.
   constrain(user.y,0,windowHeight);
 
   fill(user.fill);
-  ellipse(user.x,user.y,user.size); // Draw user
+  ellipse(user.x,user.y,user.size); // Draw user.
 
-  fill(covid19.fill.r,covid19.fill.g,covid19.fill.b);
-  ellipse(covid19.x,covid19.y,covid19.size); // Draw Covid19
-
-  let d = dist(covid19.x,covid19.y,user.x,user.y);
-  if (d < (covid19.size/2 + user.size/2)){ // Death.
-
-    noLoop();
+  if(mouseIsPressed){ // Shield
+    
+    fill(52, 235, 232);
+    ellipse(user.x,user.y,user.size*1.25);
   }
 
-  if (covid19.x > windowWidth){ // Respawning mechanism
-    covid19.x = 0;
-    covid19.y = random(0,windowHeight);
-
-  }
 
 }
