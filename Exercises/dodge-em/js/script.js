@@ -26,9 +26,7 @@ to do:
 
 "use strict";
 
-
-
-function covid19(x, y) {
+function covid19() {
   this.x = 70000;
   this.y = 70000;
   this.size = BASE_COVID_SIZE;
@@ -85,7 +83,6 @@ function preload() {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-
 }
 
 function draw() { // ===========================================================
@@ -116,7 +113,6 @@ function draw() { // ===========================================================
 // ===[2]=== COVID X and Y updated here ========================================
 
 for (var i = 0; i < covidHold.length; i++) { // For each COVID,
-
   covidHold[i].x += covidHold[i].vx; // Move it,
   covidHold[i].y += covidHold[i].vy;
 
@@ -236,13 +232,14 @@ if (keyIsDown(76)) { // MouseLeft - Shield
     ellipse(user.x, user.y, user.size * 1.25);
     userIsShielding = true;
   }
-}
+
 else {
 userIsShielding = false;
+  }
 }
 
 // ===[5]=== Game governance ===================================================
-
+  console.log(spawnNewCovid);
   if (spawnNewCovid <= millis()) { // Executes spawn covid flags
     covidHold.push(new covid19());
     spawnNewCovid = millis() + difficulty.rate;
@@ -278,18 +275,18 @@ userIsShielding = false;
     }
   }
 
-  if(death)
+  if(death) // Death state
   {
     noLoop();
     userIsDead();
   }
 
-  if(goToStart){
+  if(goToStart){ // Start state
     rectMode(CENTER);
     fill(255,52,179);
     rect(windowWidth/2,windowHeight/2,0.7*windowWidth,0.4*windowHeight);
     fill(32, 17, 72);
-    rect(windowWidth/2,windowHeight/2,0.7*windowWidth,0.4*windowHeight);
+    rect(windowWidth/2,windowHeight/2,0.67*windowWidth,0.43r*windowHeight);
     fill(255,52,179);
     textAlign(CENTER);
     textSize(32);
@@ -305,6 +302,7 @@ userIsShielding = false;
     goToStart=false;
   }
 }
+
 
 
 
