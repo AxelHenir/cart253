@@ -26,7 +26,22 @@ to do:
 
 "use strict";
 
-let staticAmount = 0;
+
+
+function covid19(x, y) {
+  this.x = 70000;
+  this.y = 70000;
+  this.size = BASE_COVID_SIZE;
+  this.vx = 0;
+  this.vy = 0;
+  this.speed = 5;
+  this.fill = {
+    r: 255,
+    g: 52,
+    b: 179
+}
+}
+
 let difficulty = {
   cSpeed: 1,
   cSize: 1,
@@ -61,33 +76,23 @@ let increaseDifficulty = 0;
 let lastDamage = 0;
 let USER_SHIELD_REGEN_DELAY = 4000;
 let shieldRegenLag=0;
+let death=false;
+let goToStart=true;
+let previousScore=0;
 
-function covid19(x, y) {
-  this.x = 70000;
-  this.y = 70000;
-  this.size = BASE_COVID_SIZE;
-  this.vx = 0;
-  this.vy = 0;
-  this.speed = 5;
-  this.fill = {
-    r: 255,
-    g: 52,
-    b: 179
-  };
+function preload() {
 }
-
-function preload() {}
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  covid19.y = random(0, windowHeight);
-  covid19.vx = covid19.speed;
+
 }
 
 function draw() { // ===========================================================
 
   background(32, 17, 72); // Draw BG
   noStroke();
+  rectMode(CORNER);
   fill(32, 17, 162);
   rect(0, 0, windowWidth, UI_BOTTOM); // Draw UI
 
@@ -151,7 +156,8 @@ for (var i = 0; i < covidHold.length; i++) { // For each COVID,
           lastDamage = millis();
         }
         else{
-          noLoop(); // Death.
+          death=true;
+          noLoop(); // Death
         }
       }
     }
@@ -162,7 +168,8 @@ for (var i = 0; i < covidHold.length; i++) { // For each COVID,
         lastDamage = millis();
       }
       else{
-        noLoop(); // Death.
+        death=true;
+        noLoop(); // Death
       }
     }
     constrain(user.sh, 0, 100); // Constrain Shield and HP
@@ -187,6 +194,7 @@ for (var i = 0; i < dashStacks; i++) { // prints stacks of dash
 }
 
 if (millis() < refreshDash) { // Draw stack refreshing
+  rectMode(CORNER);
   rectWidth = millis();
   rectWidth = map(rectWidth, dashIssued, refreshDash, windowWidth * 0.05, windowWidth * 0.24);
   constrain(rectWidth, 0.05 * windowWidth, 0.24 * windowWidth);
@@ -223,9 +231,11 @@ if (keyIsDown(32)) { // Space - Dash
 }
 
 if (mouseIsPressed) { // MouseLeft - Shield
-  fill(52, 235, 232);
-  ellipse(user.x, user.y, user.size * 1.25);
-  userIsShielding = true;
+  if(user.sh >= 1){
+    fill(52, 235, 232,160);
+    ellipse(user.x, user.y, user.size * 1.25);
+    userIsShielding = true;
+  }
 }
 else {
 userIsShielding = false;
@@ -267,4 +277,87 @@ userIsShielding = false;
       shieldRegenLag = millis() + 100;
     }
   }
+
+  if(death)
+  {
+    noLoop();
+    userIsDead();
+  }
+
+  if(goToStart){
+    rectMode(CENTER);
+    fill(255,52,179);
+    rect(windowWidth/2,windowHeight/2,0.7*windowWidth,0.4*windowHeight);
+    fill(32, 17, 72);
+    rect(windowWidth/2,windowHeight/2,0.7*windowWidth,0.4*windowHeight);
+    fill(255,52,179);
+    textAlign(CENTER);
+    textSize(32);
+    text('Welcome to NEON-CHRONICLE: [[TURBOPOLSA]] Genesis III, vol 9',windowWidth/2,windowHeight*0.4);
+    textAlign(LEFT);
+    text('CONTROLS \n WASD = Up, Left, Down, Right \n L (Hold down)= Shield \n K = Dash', windowWidth*0.20,windowHeight*0.5);
+    textAlign(RIGHT);
+    text('HOW TO PLAY \n Survive as long as you can \n against the unyielding waves of \n the cybervirus-CODE:19',windowWidth*0.8,windowHeight*0.5);
+    textAlign(CENTER);
+    text('PRESS R TO START',windowWidth/2,windowHeight*0.80);
+
+    noLoop();
+    goToStart=false;
+  }
+}
+
+
+
+//==============================================================================
+function userIsDead(){
+  noLoop(); // Death.
+
+  rectMode(CENTER);
+  fill(255,52,179);
+  rect(windowWidth/2,windowHeight/2,0.7*windowWidth,0.4*windowHeight);
+  fill(32, 17, 72);
+  rect(windowWidth/2,windowHeight/2,0.7*windowWidth,0.4*windowHeight);
+  fill(255,52,179);
+  textAlign(CENTER);
+  textSize(32);
+  text('SCORE: '+((millis()-previousScore)/1000).toFixed(1),windowWidth/2,windowHeight/2);
+  text('PRESS R TO RESTART', windowWidth/2,0.6*windowHeight);
+}
+
+function keyPressed(){
+  if (keyCode==82){
+    reset();
+  }
+}
+function reset(){
+
+  for(var i =0; i<covidHold.length;i){ // Kill all old covids
+    covidHold.pop();
+  }
+
+  difficulty.cSpeed=1; // Reset difficulty
+  difficulty.cSize=1;
+  difficulty.rate=5000;
+
+  user.x = windowWidth/2; // Reset user parameters
+  user.y = windowHeight/2;
+  user.hp = 100;
+  user.sh = 100;
+
+  spawnNewCovid = 0;
+  dashStacks = 3;
+  dashLag = 0;
+  dashStackMAX = 3;
+  refreshDash = 0;
+  dashIsRefreshing = false
+  rectWidth = 0;
+  dashIssued = 0;
+  userIsShielding = false;
+  increaseDifficulty = 0;
+  lastDamage = 0;
+  shieldRegenLag=0;
+  death=false;
+  previousScore=millis();
+
+  loop();
 }
