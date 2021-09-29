@@ -214,7 +214,7 @@ else if (user.speed < USER_SPEED_DEFAULT) {
 user.hp=constrain(user.hp,0,100);
 user.sh=constrain(user.sh,0,100);
 
-if (keyIsDown(32)) { // Space - Dash
+if (keyIsDown(75)) { // Space - Dash
 
   if (millis() >= dashLag) { // If it's been X seconds since last dash,
     if (dashStacks >= 1) { // If the user has a stack of dash available,
@@ -230,7 +230,7 @@ if (keyIsDown(32)) { // Space - Dash
   }
 }
 
-if (mouseIsPressed) { // MouseLeft - Shield
+if (keyIsDown(76)) { // MouseLeft - Shield
   if(user.sh >= 1){
     fill(52, 235, 232,160);
     ellipse(user.x, user.y, user.size * 1.25);
