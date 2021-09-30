@@ -1,28 +1,5 @@
 // Alex Henri
-/*
-Exercise 4: Dodge-Em ===========================================================
-
-My program will utilize the activity 4 code: COVID19 as its basis.
-
-Here is the  list of applied changes:
--Made difficulty parameter to control difficulty and scaling for COVID19
--position is now controlled by WASD.
--left click = dash on cooldown
--hold right click = shield + slowed movement
--show boost and shield cooldowns
--Covid19 can spawn at an angle
--Covid19 can respawn with new size, speed, angle
--Difficulty scales
-
-to do:
-
-
--display score upon death
--explain that you died upon death
--covid19 has a sprite (virus)
--user has a sprite (medic)
-
-*/
+//Exercise 4: Dodge-Em
 
 "use strict";
 
@@ -37,7 +14,7 @@ function covid19() {
     r: 255,
     g: 52,
     b: 179
-}
+  }
 }
 
 let difficulty = {
@@ -67,7 +44,7 @@ let BASE_COVID_SIZE = 100;
 let dashIsRefreshing = false;
 let rectWidth = 0;
 let dashIssued = 0;
-let UI_BOTTOM = 50;
+let UI_BOTTOM = 60;
 let userIsShielding = false;
 let DIFFICULTY_RATE = 15000;
 let increaseDifficulty = 0;
@@ -78,8 +55,16 @@ let death=false;
 let goToStart=true;
 let previousScore=0;
 
+let resetSymbol;
+let dashSymbol;
+let shieldSymbol;
+let healthSymbol;
+
 function preload() {
-  loadFont('assets/fonts/ka1.tff');
+  resetSymbol = loadImage('assets/images/restart_symbol.png');
+  dashSymbol= loadImage('assets/images/sprint.png');
+  shieldSymbol= loadImage('assets/images/shield.png');
+  healthSymbol= loadImage('assets/images/health.png');
 }
 
 function setup() {
@@ -88,11 +73,24 @@ function setup() {
 
 function draw() { // ===========================================================
 
-  background(32, 17, 72); // Draw BG
   noStroke();
+  background(32, 17, 72); // Draw BG
   rectMode(CORNER);
   fill(32, 17, 162);
   rect(0, 0, windowWidth, UI_BOTTOM); // Draw UI
+  rect(0,windowHeight-UI_BOTTOM,windowWidth, windowHeight-UI_BOTTOM);
+
+  fill(32, 17, 72); // Dash meter base
+  rectMode(CORNER);
+  rect(windowWidth*0.02, windowHeight-UI_BOTTOM*0.9, windowWidth*0.15, UI_BOTTOM*0.8);
+
+  fill(32, 17, 72); // HP bar base
+  rectMode(CORNER);
+  rect(windowWidth*0.405, windowHeight-UI_BOTTOM*0.9, windowWidth*0.25, UI_BOTTOM*0.8);
+
+  fill(32, 17, 72); // SH bar base
+  rectMode(CORNER);
+  rect(windowWidth*0.73, windowHeight-UI_BOTTOM*0.9, windowWidth*0.25, UI_BOTTOM*0.8);
 
 // ===[1]=== User X and Y updated here =========================================
 
@@ -109,7 +107,7 @@ function draw() { // ===========================================================
     user.x += user.speed;
   }
   user.x = constrain(user.x,0,windowWidth); // Constrain the user
-  user.y = constrain(user.y,UI_BOTTOM+user.size/2,windowHeight);
+  user.y = constrain(user.y,UI_BOTTOM+user.size/2,windowHeight-user.size/2-UI_BOTTOM);
 
 // ===[2]=== COVID X and Y updated here ========================================
 
@@ -117,21 +115,20 @@ for (var i = 0; i < covidHold.length; i++) { // For each COVID,
   covidHold[i].x += covidHold[i].vx; // Move it,
   covidHold[i].y += covidHold[i].vy;
 
-  covidHold[i].size = BASE_COVID_SIZE * difficulty.cSize; // Adjust size,
-
   if (covidHold[i].x > windowWidth) { // Respawn them if needed,
     covidHold[i].x = 0;
-    covidHold[i].y = random(UI_BOTTOM+covidHold[i].size/2, windowHeight);
+    covidHold[i].y = random(UI_BOTTOM+covidHold[i].size/2, windowHeight-covidHold[i].size/2 - UI_BOTTOM);
     covidHold[i].vx = random(difficulty.cSpeed + 2, difficulty.cSpeed + 6);
     covidHold[i].vy = random((difficulty.cSpeed * -1) - 4, difficulty.cSpeed + 4);
+    covidHold[i].size = BASE_COVID_SIZE * difficulty.cSize; // Adjust size
   }
 
-  if (covidHold[i].y > windowHeight) { // Bounce them off the floor & ceiling
+  if (covidHold[i].y > windowHeight-covidHold[i].size/2-UI_BOTTOM) { // Bounce them off the floor & ceiling
     covidHold[i].vy *= -1;
-    constrain(covidHold[i], UI_BOTTOM+covidHold[i].size/2, windowHeight);
+    constrain(covidHold[i].y, UI_BOTTOM+covidHold[i].size/2, windowHeight-covidHold[i].size/2-UI_BOTTOM);
   } else if (covidHold[i].y < UI_BOTTOM+covidHold[i].size/2) {
     covidHold[i].vy *= -1;
-    constrain(covidHold[i], UI_BOTTOM+covidHold[i].size/2, windowHeight);
+    constrain(covidHold[i].y, UI_BOTTOM+covidHold[i].size/2, windowHeight-covidHold[i].size/2-UI_BOTTOM);
   }
 
   fill(covidHold[i].fill.r, covidHold[i].fill.g, covidHold[i].fill.b); // Find their color,
@@ -143,13 +140,13 @@ for (var i = 0; i < covidHold.length; i++) { // For each COVID,
     if (userIsShielding) { // If user is shielding
       if (user.sh >= 1) {
         user.sh--;
-        user.speed--;
+        user.speed=1;
         lastDamage = millis();
       }
       else {
         if (user.hp >= 1) {
           user.hp--;
-          user.speed--;
+          user.speed =1;
           lastDamage = millis();
         }
         else{
@@ -161,7 +158,7 @@ for (var i = 0; i < covidHold.length; i++) { // For each COVID,
     else { // If user is NOT shielding
       if(user.hp >= 1){
         user.hp--;
-        user.speed--;
+        user.speed=1;
         lastDamage = millis();
       }
       else{
@@ -179,24 +176,10 @@ for (var i = 0; i < covidHold.length; i++) { // For each COVID,
 fill(85, 231, 255);
 ellipse(user.x, user.y, user.size); // Draw user.
 
-textSize(30); // Prints updated HP
-fill(255, 52, 179);
-text('HP: ' + user.hp, windowWidth * 0.05, 35);
-
-fill(85, 231, 255); // Prints updated shield
-text('SHIELD: ' + user.sh, windowWidth * 0.15, 35);
-
-for (var i = 0; i < dashStacks; i++) { // prints stacks of dash
-  ellipse(windowWidth / 2 + (i * 33), 25, 30);
-}
-
-if (millis() < refreshDash) { // Draw stack refreshing
-  rectMode(CORNER);
-  rectWidth = millis();
-  rectWidth = map(rectWidth, dashIssued, refreshDash, windowWidth * 0.05, windowWidth * 0.24);
-  constrain(rectWidth, 0.05 * windowWidth, 0.24 * windowWidth);
-  rect(windowWidth * 0.25, 10, rectWidth, 30);
-}
+printHp();
+printSh();
+printScore();
+printDashes();
 
 // ===[4]=== Govern the user ===================================================
 
@@ -227,20 +210,18 @@ if (keyIsDown(75)) { // Space - Dash
   }
 }
 
-if (keyIsDown(76)) { // MouseLeft - Shield
+if (keyIsDown(76)) { // L - Shield
   if(user.sh >= 1){
     fill(52, 235, 232,160);
     ellipse(user.x, user.y, user.size * 1.25);
     userIsShielding = true;
   }
-
+}
 else {
 userIsShielding = false;
   }
-}
 
 // ===[5]=== Game governance ===================================================
-  console.log(spawnNewCovid);
   if (spawnNewCovid <= millis()) { // Executes spawn covid flags
     covidHold.push(new covid19());
     spawnNewCovid = millis() + difficulty.rate;
@@ -268,7 +249,7 @@ userIsShielding = false;
     }
   }
 
-  if((millis() - lastDamage)>= USER_SHIELD_REGEN_DELAY){
+  if((millis() - lastDamage)>= USER_SHIELD_REGEN_DELAY){ // SHield Regen delay
     if(shieldRegenLag <= millis()){
       user.sh++;
       user.sh=constrain(user.sh,0,100);
@@ -304,9 +285,6 @@ userIsShielding = false;
   }
 }
 
-
-
-
 //==============================================================================
 function userIsDead(){
   noLoop(); // Death.
@@ -315,7 +293,7 @@ function userIsDead(){
   fill(255,52,179);
   rect(windowWidth/2,windowHeight/2,0.7*windowWidth,0.4*windowHeight);
   fill(32, 17, 72);
-  rect(windowWidth/2,windowHeight/2,0.7*windowWidth,0.4*windowHeight);
+  rect(windowWidth/2,windowHeight/2,0.69*windowWidth,0.39*windowHeight);
   fill(255,52,179);
   textAlign(CENTER);
   textSize(32);
@@ -359,4 +337,47 @@ function reset(){
   previousScore=millis();
 
   loop();
+}
+
+function printHp(){ // Prints updated HP
+  imageMode(CORNER);
+  image(healthSymbol, windowWidth*0.35, windowHeight-UI_BOTTOM*0.9, UI_BOTTOM*0.8,UI_BOTTOM*0.8);
+  textSize(30);
+  fill(255, 52, 179);
+  rectWidth = user.hp;
+  rectWidth = map(rectWidth,0,100,0,1);
+  rectMode(CORNER);
+  rect(windowWidth*0.405, windowHeight-UI_BOTTOM*0.9, windowWidth*0.25*rectWidth, UI_BOTTOM*0.8);
+
+}
+
+function printSh(){ // Prints updated shield
+  imageMode(CORNER);
+  image(shieldSymbol, windowWidth*0.68, windowHeight-UI_BOTTOM*0.9, UI_BOTTOM*0.8,UI_BOTTOM*0.8);
+  fill(85, 231, 255);
+  rectWidth = user.sh;
+  rectWidth = map(rectWidth,0,100,0,1);
+  rectMode(CORNER);
+  rect(windowWidth*0.73, windowHeight-UI_BOTTOM*0.9, windowWidth*0.25*rectWidth, UI_BOTTOM*0.8);
+}
+
+function printScore(){
+  fill(255, 52, 179);
+  textAlign(CENTER, CENTER);
+  text('SCORE: '+((millis()-previousScore)/1000).toFixed(1), windowWidth/2, UI_BOTTOM/2);
+}
+
+function printDashes(){
+
+  if (millis() < refreshDash) { // Draw stack refreshing
+    fill(85, 231, 255);
+    rectMode(CORNER);
+    rectWidth = millis();
+    rectWidth = map(rectWidth, dashIssued, refreshDash, 0,1);
+    rect(windowWidth*0.02, windowHeight-UI_BOTTOM*0.9, rectWidth*windowWidth*0.15, UI_BOTTOM*0.8);
+  }
+  for (var i = 0; i < dashStacks; i++) { // prints stacks of dash
+    imageMode(CORNER);
+    image(dashSymbol,0.19*windowWidth +i*UI_BOTTOM*0.8, windowHeight-UI_BOTTOM*0.9, UI_BOTTOM*0.8, UI_BOTTOM*0.8);
+  }
 }
