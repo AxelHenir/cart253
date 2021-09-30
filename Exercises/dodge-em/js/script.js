@@ -79,6 +79,7 @@ let goToStart=true;
 let previousScore=0;
 
 function preload() {
+  loadFont('assets/fonts/ka1.tff');
 }
 
 function setup() {
@@ -286,7 +287,7 @@ userIsShielding = false;
     fill(255,52,179);
     rect(windowWidth/2,windowHeight/2,0.7*windowWidth,0.4*windowHeight);
     fill(32, 17, 72);
-    rect(windowWidth/2,windowHeight/2,0.67*windowWidth,0.43r*windowHeight);
+    rect(windowWidth/2,windowHeight/2,0.67*windowWidth,0.43*windowHeight);
     fill(255,52,179);
     textAlign(CENTER);
     textSize(32);
