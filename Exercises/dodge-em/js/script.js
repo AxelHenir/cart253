@@ -294,7 +294,7 @@ function userIsDead(){
   fill(255,52,179);
   textAlign(CENTER, CENTER);
   textSize(32);
-  text('SCORE: '+((millis()-previousScore)/1000).toFixed(1),windowWidth/2,windowHeight/2);
+  text('SCORE: '+((millis()-previousScore)/10).toFixed(0),windowWidth/2,windowHeight/2);
 }
 
 function keyPressed(){
@@ -360,7 +360,7 @@ function printSh(){ // Prints updated shield
 function printScore(){
   fill(255, 52, 179);
   textAlign(CENTER, CENTER);
-  text('SCORE: '+((millis()-previousScore)/1000).toFixed(1), windowWidth/2, UI_BOTTOM/2);
+  text('SCORE: '+((millis()-previousScore)/10).toFixed(0), windowWidth/2, UI_BOTTOM/2);
 }
 
 function printDashes(){
