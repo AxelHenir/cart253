@@ -59,12 +59,18 @@ let resetSymbol;
 let dashSymbol;
 let shieldSymbol;
 let healthSymbol;
+let titlescreen;
+let userIcon;
+let enemyIcon;
 
 function preload() {
   resetSymbol = loadImage('assets/images/restart_symbol.png');
   dashSymbol= loadImage('assets/images/sprint.png');
   shieldSymbol= loadImage('assets/images/shield.png');
   healthSymbol= loadImage('assets/images/health.png');
+  titlescreen= loadImage('assets/images/tscreen.png');
+  userIcon=loadImage('assets/images/user_icon.png');
+  enemyIcon=loadImage('assets/images/enemy_icon.png');
 }
 
 function setup() {
@@ -134,6 +140,8 @@ for (var i = 0; i < covidHold.length; i++) { // For each COVID,
   fill(covidHold[i].fill.r, covidHold[i].fill.g, covidHold[i].fill.b); // Find their color,
 
   ellipse(covidHold[i].x, covidHold[i].y, covidHold[i].size); // Draw them,
+  imageMode(CENTER,CENTER);
+  image(enemyIcon, covidHold[i].x,covidHold[i].y,covidHold[i].size*0.9,covidHold[i].size*0.9);
 
   let d = dist(covidHold[i].x, covidHold[i].y, user.x, user.y);
   if (d < (covidHold[i].size / 2 + user.size / 2)) { // Check for collision,
@@ -175,6 +183,8 @@ for (var i = 0; i < covidHold.length; i++) { // For each COVID,
 
 fill(85, 231, 255);
 ellipse(user.x, user.y, user.size); // Draw user.
+imageMode(CENTER,CENTER);
+image(userIcon, user.x,user.y,user.size*0.9,user.size*0.9);
 
 printHp();
 printSh();
@@ -264,21 +274,8 @@ userIsShielding = false;
   }
 
   if(goToStart){ // Start state
-    rectMode(CENTER);
-    fill(255,52,179);
-    rect(windowWidth/2,windowHeight/2,0.7*windowWidth,0.4*windowHeight);
-    fill(32, 17, 72);
-    rect(windowWidth/2,windowHeight/2,0.67*windowWidth,0.43*windowHeight);
-    fill(255,52,179);
-    textAlign(CENTER);
-    textSize(32);
-    text('Welcome to NEON-CHRONICLE: [[TURBOPOLSA]] Genesis III, vol 9',windowWidth/2,windowHeight*0.4);
-    textAlign(LEFT);
-    text('CONTROLS \n WASD = Up, Left, Down, Right \n L (Hold down)= Shield \n K = Dash', windowWidth*0.20,windowHeight*0.5);
-    textAlign(RIGHT);
-    text('HOW TO PLAY \n Survive as long as you can \n against the unyielding waves of \n the cybervirus-CODE:19',windowWidth*0.8,windowHeight*0.5);
-    textAlign(CENTER);
-    text('PRESS R TO START',windowWidth/2,windowHeight*0.80);
+    imageMode(CENTER,CENTER);
+    image(titlescreen, windowWidth/2,windowHeight/2, windowWidth*0.68,windowHeight*0.65);
 
     noLoop();
     goToStart=false;
@@ -291,14 +288,13 @@ function userIsDead(){
 
   rectMode(CENTER);
   fill(255,52,179);
-  rect(windowWidth/2,windowHeight/2,0.7*windowWidth,0.4*windowHeight);
+  rect(windowWidth/2,windowHeight/2,0.3*windowWidth,0.1*windowHeight);
   fill(32, 17, 72);
-  rect(windowWidth/2,windowHeight/2,0.69*windowWidth,0.39*windowHeight);
+  rect(windowWidth/2,windowHeight/2,0.29*windowWidth,0.09*windowHeight);
   fill(255,52,179);
-  textAlign(CENTER);
+  textAlign(CENTER, CENTER);
   textSize(32);
   text('SCORE: '+((millis()-previousScore)/1000).toFixed(1),windowWidth/2,windowHeight/2);
-  text('PRESS R TO RESTART', windowWidth/2,0.6*windowHeight);
 }
 
 function keyPressed(){
