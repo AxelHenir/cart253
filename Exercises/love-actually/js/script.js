@@ -78,6 +78,7 @@ function draw() {
 }
 
 function foundLove(){
+
   background(255);
   push();
   textSize(64);
@@ -88,12 +89,14 @@ function foundLove(){
   text('TYPE "AGAIN" \n TO SEARCH AGAIN', windowHeight/2,windowHeight*0.55);
   pop();
 
-if (input.includes('again')) {
-  state = 'searching';
-  input ="0";
-  newSearch();
-  newState=true;
-}
+  if (input.includes('again')) {
+    console.log('going again');
+    state = 'searching';
+    input ="0";
+    newSearch();
+    newState=true;
+  }
+
 }
 
 function title(){
@@ -400,7 +403,7 @@ function move(str){
           user.x++;
           break;
         }
-        else if (grid[user.x][user.y+1]=='love'){
+        else if (grid[user.x+1][user.y]=='love'){
           state='foundLove';
           break;
         }
