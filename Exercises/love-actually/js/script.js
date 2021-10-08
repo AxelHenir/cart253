@@ -85,14 +85,15 @@ function foundLove(){
   textAlign(CENTER,CENTER);
   text('LOVELY.',windowHeight/2,windowHeight*0.45);
   textSize(32);
-  text('TYPE "AGAIN" \n TO GO AGAIN', windowHeight/2,windowHeight*0.55);
+  text('TYPE "AGAIN" \n TO SEARCH AGAIN', windowHeight/2,windowHeight*0.55);
   pop();
 
-  if (input.includes('again')) {
-    state = 'searching';
-    input ="0";
-    newSearch();
-  }
+if (input.includes('again')) {
+  state = 'searching';
+  input ="0";
+  newSearch();
+  newState=true;
+}
 }
 
 function title(){
@@ -305,7 +306,7 @@ function move(str){
 
     case 'up':
     user.face='up';
-      if(user.y-1<=0){
+      if(user.y-1<0){
         break;
       }
       else if (grid[user.x][user.y-1]=='wall'){
@@ -359,7 +360,7 @@ function move(str){
 
     case 'left':
     user.face='left';
-        if(user.x-1<=0){
+        if(user.x-1<0){
           break;
         }
         else if (grid[user.x-1][user.y]=='wall'){
