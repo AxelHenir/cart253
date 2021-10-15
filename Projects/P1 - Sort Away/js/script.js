@@ -3,7 +3,7 @@
 "use strict";
 
 let CW = 1000; // Canvas Width (CW)
-let CANDLE_AMOUNT=75; // Number of candles to be sorted
+let CANDLE_AMOUNT=50; // Number of candles to be sorted
 
 let state = 'title'; // Can be: (title, running, paused, finished)
 
@@ -21,7 +21,6 @@ function setup() {
   background(255);
   scrambleArr();
   drawArr();
-
 
 }
 
@@ -63,14 +62,14 @@ function scrambleArr(){ // Call to scramble the candles
 }
 
 function drawSwap(a,b){ // Call to draw the swap between arr[a] and arr[b]
-  
+
 }
 
 function drawArr(){
   rectMode(CORNERS);
   fill(0);
   for (let i=0;i<arr.length;i++){
-    fill(arr[i]*5,0,150);
+    fill(arr[i]*5,0,0);
     rect(i*CW/CANDLE_AMOUNT,CW,(i*CW/CANDLE_AMOUNT)+CW/CANDLE_AMOUNT,CW-(arr[i]*CW/CANDLE_AMOUNT));
   }
 }
