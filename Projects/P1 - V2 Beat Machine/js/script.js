@@ -14,7 +14,9 @@ let playhead = {
 let note={
   x:500,
   y:500,
-  
+  sfx: undefined,
+  img: undefined,
+  color: {r:200,g:200,b:200},
 }
 
 let bpm = 100;
@@ -22,16 +24,25 @@ let metronomeSFX;
 
 let channels = [100, 100, 100, 100];
 
+let pauseB, playB, noloopB, loopB;
 
 function preload() {
   metronomeSFX = loadSound('assets/sounds/metronome/metronome.wav');
+  pauseB = loadImage('assets/images/pause.png');
+  playB = loadImage('assets/images/play.png');
+  noloopB = loadImage('assets/images/noloop.png');
+  loopB = loadImage('assets/images/loop.png');
+
+
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   background(235, 215, 138);
   rectMode(CENTER);
+  imageMode(CENTER);
   noStroke();
+
 
 }
 
@@ -44,12 +55,15 @@ function draw() {
 
 }
 
+
+
 function mousePressed() { // Sound testing
   metronomeSFX.play();
 }
 
 function play() { // Steps for sim if not paused.
   drawUI(); // Print UI.
+  drawNotes();
   upadatePlayhead(); // Update position of playhead.
   drawPlayhead(); // Print playhead at current position
   playSound(); // Check for collision, play sounds.
@@ -57,18 +71,22 @@ function play() { // Steps for sim if not paused.
 
 function pause() { // Steps for sim if paused.
   drawUI(); // Draw UI.
+  drawNotes();
   upadatePlayhead(); // Update position of playhead.
   drawPlayhead(); // Draw playhead.
-  userInteraction(); // Check if user is interacting with an element
 
 }
 
-function userInteraction() {
-
+function drawNotes() {
+  push();
+  fill(note.color.r,note.color.g,note.color.b);
+  
+  rect(500,500,40,40);
+  pop();
 
 }
 
-function drawUI() {
+function drawUI() { // Draws the UI.
   push();
   background(252, 225, 157);
 
@@ -82,9 +100,15 @@ function drawUI() {
   rect(width / 2, 0, width, height * 0.2); // Top Bar UI
 
   pop();
-} // Draws the UI.
 
-function upadatePlayhead() { // Update position and print playhead
+  let buttons = [pauseB,playB,noloopB,loopB];
+
+  for(let i=0; i<buttons.length;i++){
+    image(buttons[i],(0.1*width)+(i*0.09*height),(0.05*height),(0.075*height),(0.075*height));
+  }
+}
+
+function upadatePlayhead() { // Updates playhead position.
 
   if (playhead.isBeingMoved) {
     handleDragging();
@@ -99,15 +123,15 @@ function upadatePlayhead() { // Update position and print playhead
       }
     }
   }
-
 }
 
-function handleDragging(){
+function handleDragging(){ // Handles user dragging playhead.
   playhead.x = mouseX + playhead.offsetX;
   playhead.x = constrain(playhead.x,0,width);
 }
 
-function drawPlayhead() {
+function drawPlayhead() { // Draws the playhead to the screen.
+
   push();
   fill(255, 158, 229);
   stroke(255, 158, 229);
@@ -115,7 +139,8 @@ function drawPlayhead() {
   line(playhead.x, 0.125 * height, playhead.x, 0.875 * height);
   rect(playhead.x, 0.113 * height, 0.025 * height, 0.025 * height);
   pop();
-} // Draws the playhead
+
+}
 
 function playSound() {
   playCh(1);
@@ -140,13 +165,13 @@ function chMuted(k) {
 } // Checks if channel K is muted.
 
 function mousePressed(){
-  if (mouseIsInsidePlayHead()) {
+  if (mouseIsInsideElement()) {
     playhead.isBeingMoved = true;
     playhead.offsetX = playhead.x - mouseX;
   }
 }
 
-function mouseIsInsidePlayHead(){
+function mouseIsInsideElement(){
   let d = dist(mouseX,mouseY,playhead.x,0.125 * height);
   if(d < 0.025 * height){
     return true;
