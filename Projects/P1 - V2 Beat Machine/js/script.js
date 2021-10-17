@@ -3,6 +3,7 @@
 "use strict";
 let playing = false;
 let looping = true;
+let click;
 
 let playhead = {
   x: 0,
@@ -11,32 +12,35 @@ let playhead = {
   last: 0,
 }
 
-let note={
-  x:500,
-  y:500,
-  size:50,
-  sfx: undefined,
-  img: undefined,
-  color: {r:200,g:0,b:200},
-  played: false,
+function note(){
+  this.x=500;
+  this.y=500;
+  this.size=50;
+  this.sfx=click;
+  this.color= 255;
+  this.played= false;
+  this.channel=1;
+  this.offsetX=0;
+  this.offsetY=0;
+  this.isBeingMoved=true;
 }
 
-let notes=[note];
+let notes=[];
 
-let bpm = 170;
+let bpm = 120;
 let metronomeSFX;
 
 let channels = [100, 100, 100, 100];
 
 let pauseB, playB, noloopB, loopB;
 
+
 function preload() {
-  note.sfx = loadSound('assets/sounds/metronome/metronome.wav');
+  click = loadSound('assets/sounds/metronome/metronome.wav');
   pauseB = loadImage('assets/images/pause.png');
   playB = loadImage('assets/images/play.png');
   noloopB = loadImage('assets/images/noloop.png');
   loopB = loadImage('assets/images/loop.png');
-
 
 }
 
@@ -46,6 +50,7 @@ function setup() {
   rectMode(CENTER);
   imageMode(CENTER);
   noStroke();
+
 
 }
 
@@ -60,6 +65,7 @@ function draw() {
 }
 
 function mousePressed() { // Sound testing
+notes.push(new note());
 
 }
 
@@ -79,15 +85,27 @@ function pause() { // Steps for sim if paused.
 
 }
 
-function drawNotes() {
-  push();
-  fill(note.color.r,note.color.g,note.color.b);
-  rect(note.x,note.y,note.size,note.size);
-  pop();
+function drawNotes() { // Draws the contents of notes[]
+
+  for(let i=0;i<notes.length;i++){
+    push();
+    fill(notes[i].color);
+    notes[rect(note.x,note.y,note.size,note.size)];
+    pop();
+  }
+
+
+}
+
+function newNote(){ // Spawns new note
+
+  notes.push(new note());
 
 }
 
 function drawUI() { // Draws the UI.
+
+  let buttons = [pauseB,playB,noloopB,loopB];
   push();
   background(252, 225, 157);
 
@@ -102,17 +120,16 @@ function drawUI() { // Draws the UI.
 
   pop();
 
-  let buttons = [pauseB,playB,noloopB,loopB];
-
   for(let i=0; i<buttons.length;i++){
     image(buttons[i],(0.1*width)+(i*0.09*height),(0.05*height),(0.075*height),(0.075*height));
   }
+
 }
 
 function upadatePlayhead() { // Updates playhead position.
 
   if (playhead.isBeingMoved) {
-    handleDragging();
+    dragPlayhead();
   }
   else if(playing){
     playhead.x += tempo();
@@ -138,7 +155,7 @@ function tempo() { // Dictates the increment of the playhead.
 
 }
 
-function handleDragging() { // Handles user dragging playhead.
+function dragPlayhead() { // Handles user dragging playhead.
   playhead.x = mouseX + playhead.offsetX;
   playhead.x = constrain(playhead.x,0,width);
 }
@@ -180,14 +197,38 @@ function chMuted(k) { // Checks if channel k is muted.
   }
 }
 
-function mousePressed(){
-  if (mouseIsInsideElement()) {
+function mousePressed(){ // Handles what happens when mouse is clicked.
+  if (mouseIsInsidePlayhead()) {
     playhead.isBeingMoved = true;
     playhead.offsetX = playhead.x - mouseX;
   }
+  else if(mouseisInsideNote()){
+    notes[n].isBeingMoved=true;
+    notes[n].offsetX= notes[n].x - mouseX;
+    notes[n].offsetY= notes[n].y - mouseY;
+  }
+  else if(mouseY<0.1*height){
+    switch(mouseisInsideButton()){
+      case 0: // pause Button
+      playing=false;
+      break;
+      case 1: // play Button
+      playing=true;
+      break;
+      case 2: // noloop Button
+      looping=false;
+      break;
+      case 3: // loop button
+      looping=true;
+      break;
+      case 99:
+      console.log("99!");
+
+    }
+  }
 }
 
-function mouseIsInsideElement(){
+function mouseIsInsidePlayhead(){ // Checks if the mouse is over the playhead.
   let d = dist(mouseX,mouseY,playhead.x,0.125 * height);
   if(d < 0.025 * height){
     return true;
@@ -197,11 +238,41 @@ function mouseIsInsideElement(){
   }
 }
 
+function mouseisInsideButton(){ // Checks which button the mouse may be inside of
+  let buttons = [pauseB,playB,noloopB,loopB];
+  let d;
+  for (let i=0;i<buttons.length;i++){
+    d = dist((0.1*width)+((i)*0.09*height),0.05*height,mouseX,mouseY);
+    if (d<(0.08*height)){
+      return i;
+    }
+  }
+  return 99;
+
+}
+
+function mouseisInsideNote(){ // Checks if the mouse is inside a note.
+  return false;
+}
+
 function mouseReleased(){ // Handles mouse releases.
-  playhead.isBeingMoved=false;
-  playhead.offsetX=0;
-  playhead.offsetY=0;
-  playhead.last=playhead.x;
+
+  if (playhead.isBeingMoved){
+    playhead.isBeingMoved=false;
+    playhead.offsetX=0;
+    playhead.offsetY=0;
+    playhead.last=playhead.x;
+  }
+  else{
+    for(let i=0;i<notes.length;i++){
+      if(notes[i].isBeingMoved){
+        notes[i].isBeingMoved = false;
+        notes[i].offsetX=0;
+        notes[i].offsetY=0;
+      }
+    }
+  }
+
 }
 
 function keyPressed() { // Handles key presses.
