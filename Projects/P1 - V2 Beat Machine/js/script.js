@@ -14,12 +14,16 @@ let playhead = {
 let note={
   x:500,
   y:500,
+  size:50,
   sfx: undefined,
   img: undefined,
-  color: {r:200,g:200,b:200},
+  color: {r:200,g:0,b:200},
+  played: false,
 }
 
-let bpm = 100;
+let notes=[note];
+
+let bpm = 170;
 let metronomeSFX;
 
 let channels = [100, 100, 100, 100];
@@ -27,7 +31,7 @@ let channels = [100, 100, 100, 100];
 let pauseB, playB, noloopB, loopB;
 
 function preload() {
-  metronomeSFX = loadSound('assets/sounds/metronome/metronome.wav');
+  note.sfx = loadSound('assets/sounds/metronome/metronome.wav');
   pauseB = loadImage('assets/images/pause.png');
   playB = loadImage('assets/images/play.png');
   noloopB = loadImage('assets/images/noloop.png');
@@ -43,10 +47,10 @@ function setup() {
   imageMode(CENTER);
   noStroke();
 
-
 }
 
 function draw() {
+
   if (playing) { // Playing or Paused
     play();
   } else {
@@ -55,15 +59,13 @@ function draw() {
 
 }
 
-
-
 function mousePressed() { // Sound testing
-  metronomeSFX.play();
+
 }
 
 function play() { // Steps for sim if not paused.
-  drawUI(); // Print UI.
-  drawNotes();
+  drawUI(); // Draw UI.
+  drawNotes(); // Draw all notes.
   upadatePlayhead(); // Update position of playhead.
   drawPlayhead(); // Print playhead at current position
   playSound(); // Check for collision, play sounds.
@@ -80,8 +82,7 @@ function pause() { // Steps for sim if paused.
 function drawNotes() {
   push();
   fill(note.color.r,note.color.g,note.color.b);
-  
-  rect(500,500,40,40);
+  rect(note.x,note.y,note.size,note.size);
   pop();
 
 }
@@ -114,18 +115,30 @@ function upadatePlayhead() { // Updates playhead position.
     handleDragging();
   }
   else if(playing){
-    playhead.x++;
+    playhead.x += tempo();
     if (playhead.x >= width) {
       playhead.x = 0;
+      for(let i=0;i<notes.length;i++){
+        notes[i].played=false;
+      }
       if (!looping) { // check if playlist looping is on
         playing = false;
+        playhead.last=0;
         console.log("Paused. (Looping is: ", looping, ")");
       }
     }
   }
 }
 
-function handleDragging(){ // Handles user dragging playhead.
+function tempo() { // Dictates the increment of the playhead.
+
+  let executions = ((60000/bpm)*16)/16.66667;
+  let speed=width/executions;
+  return speed;
+
+}
+
+function handleDragging() { // Handles user dragging playhead.
   playhead.x = mouseX + playhead.offsetX;
   playhead.x = constrain(playhead.x,0,width);
 }
@@ -144,25 +157,28 @@ function drawPlayhead() { // Draws the playhead to the screen.
 
 function playSound() {
   playCh(1);
-  playCh(2);
-  playCh(3);
-  playCh(4);
-
 }
 
 function playCh(k) {
-  if (!chMuted(k)) { // Check if channel is muted
-
+  if (!chMuted(k)) {
+    for(let i=0;i<notes.length;i++){
+      let d = dist(playhead.x,notes[i].y,notes[i].x,notes[i].y);
+      if(d<notes[i].size && !(notes[i].played)){
+        note.sfx.play();
+        notes[i].played=true;
+      }
+    }
   }
-} // Plays sound from channel K.
+}
 
-function chMuted(k) {
+function chMuted(k) { // Checks if channel k is muted.
   if (channels[k + 1] <= 0) {
     return true;
-  } else {
+  }
+  else {
     return false;
   }
-} // Checks if channel K is muted.
+}
 
 function mousePressed(){
   if (mouseIsInsideElement()) {
@@ -181,14 +197,14 @@ function mouseIsInsideElement(){
   }
 }
 
-function mouseReleased(){
+function mouseReleased(){ // Handles mouse releases.
   playhead.isBeingMoved=false;
   playhead.offsetX=0;
   playhead.offsetY=0;
   playhead.last=playhead.x;
 }
 
-function keyPressed() {
+function keyPressed() { // Handles key presses.
 
   switch (keyCode) {
 
@@ -197,9 +213,13 @@ function keyPressed() {
         console.log("Paused.");
         playing = false;
         playhead.x = playhead.last;
-      } else {
+      }
+      else {
         console.log("Resumed.");
         playing = true;
+        for(let i=0;i<notes.length;i++){
+          notes[i].played=false;
+        }
       }
       break;
 
@@ -214,4 +234,4 @@ function keyPressed() {
       break;
 
   }
-} // Key Commands (Space, L,)
+}
