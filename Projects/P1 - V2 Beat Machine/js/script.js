@@ -25,21 +25,6 @@ function note(){
   this.isBeingMoved=true;
 }
 
-class Button {
-  constructor(inX,inY,inImg,inSize){
-    this.x=inX;
-    this.y=inY;
-    this.img = inImg;
-    this.size= inSize;
-  }
-
-  display(){
-    stroke(0);
-    image(this.img,this.x,this.y,this.size,this.size);
-  }
-
-}
-
 let notes=[];
 
 let bpm = 120;
@@ -48,13 +33,12 @@ let metronomeSFX;
 let channels = [100, 100, 100, 100];
 
 let pauseB, playB, noloopB, loopB, metronomeB, tempoB, tempoDB, tempoUB;
-let playButton;
+let playButton,pauseButton,loopButton,noloopButton;
 
 
 function preload() {
   click = loadSound('assets/sounds/metronome/metronome.wav');
   pauseB = loadImage('assets/images/pause.png');
-  playB = loadImage('assets/images/play.png');
   noloopB = loadImage('assets/images/noloop.png');
   loopB = loadImage('assets/images/loop.png');
   metronomeB=loadImage('assets/images/metronome.png');
@@ -70,7 +54,27 @@ function setup() {
   rectMode(CENTER);
   imageMode(CENTER);
   noStroke();
-  playButton = new Button((0.1*width)+(0.09*height),(0.05*height),playB,(0.075*height));
+
+  playButton = createImg('assets/images/play.png');
+  pauseButton = createImg('assets/images/pause.png');
+  loopButton = createImg('assets/images/loop.png');
+  noloopButton = createImg('assets/images/noloop.png');
+
+  playButton.position((0.1*width)+(0.09*height),(0.025*height));
+  playButton.size(0.075*height,0.075*height);
+  playButton.mousePressed(setToPlay);
+
+  pauseButton.position((0.1*width)+(2*(0.09*height)),(0.025*height));
+  pauseButton.size(0.075*height,0.075*height);
+  pauseButton.mousePressed(setToPause);
+
+  loopButton.position((0.1*width)+(3*(0.09*height)),(0.025*height));
+  loopButton.size(0.075*height,0.075*height);
+  loopButton.mousePressed(setLooping);
+
+  noloopButton.position((0.1*width)+(4*(0.09*height)),(0.025*height));
+  noloopButton.size(0.075*height,0.075*height);
+  noloopButton.mousePressed(setnoloop);
 
 }
 
@@ -81,11 +85,6 @@ function draw() {
   } else {
     pause();
   }
-
-}
-
-function mousePressed() { // Sound testing
-notes.push(new note());
 
 }
 
@@ -104,8 +103,6 @@ function pause() { // Steps for sim if paused.
   drawPlayhead(); // Draw playhead.
 
 }
-
-playButton.mousePressed(setToPlay);
 
 function drawNotes() { // Draws the contents of notes[]
 
@@ -127,7 +124,6 @@ function newNote(){ // Spawns new note
 
 function drawUI() { // Draws the UI.
 
-  let buttons = [pauseB, playB, noloopB, loopB, metronomeB, tempoB, tempoDB, tempoUB];
   push();
   background(252, 225, 157);
 
@@ -142,17 +138,25 @@ function drawUI() { // Draws the UI.
 
   pop();
 
-  for(let i=0; i<buttons.length;i++){
-    image(buttons[i],(0.1*width)+(i*0.09*height),(0.05*height),(0.075*height),(0.075*height));
-  }
-
 }
 
-
-
-function setToPlay(){
+function setToPlay(){ // Sets the playing variable to true.
+  console.log("Resumed. (Source: Play Button)");
   playing=true;
 }
+function setToPause(){
+  console.log("Paused. (Source: Pause Button)");
+  playing=false;
+}
+function setLooping(){
+  console.log("Looping: ,",looping, " (Source: Loop Button)");
+  looping=true;
+}
+function setnoloop(){
+  console.log("Looping: ,",looping, " (Source: Noloop Button)");
+  looping=false;
+}
+
 
 function upadatePlayhead() { // Updates playhead position.
 
@@ -235,25 +239,6 @@ function mousePressed(){ // Handles what happens when mouse is clicked.
     notes[n].offsetX= notes[n].x - mouseX;
     notes[n].offsetY= notes[n].y - mouseY;
   }
-  else if(mouseY<0.1*height){
-    switch(mouseisInsideButton()){
-      case 0: // pause Button
-      playing=false;
-      break;
-      case 1: // play Button
-      playing=true;
-      break;
-      case 2: // noloop Button
-      looping=false;
-      break;
-      case 3: // loop button
-      looping=true;
-      break;
-      case 99:
-      console.log("99!");
-
-    }
-  }
 }
 
 function mouseIsInsidePlayhead(){ // Checks if the mouse is over the playhead.
@@ -266,20 +251,7 @@ function mouseIsInsidePlayhead(){ // Checks if the mouse is over the playhead.
   }
 }
 
-function mouseisInsideButton(){ // Checks which button the mouse may be inside of
-  let buttons = [pauseB,playB,noloopB,loopB];
-  let d;
-  for (let i=0;i<buttons.length;i++){
-    d = dist((0.1*width)+((i)*0.09*height),0.05*height,mouseX,mouseY);
-    if (d<(0.08*height)){
-      return i;
-    }
-  }
-  return 99;
-
-}
-
-function mouseisInsideNote(){ // Checks if the mouse is inside a note.
+function mouseisInsideNote(){ // Checks if the mouse is inside a note. PLACEHOLDER
   return false;
 }
 
