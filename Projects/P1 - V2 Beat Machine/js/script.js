@@ -25,6 +25,21 @@ function note(){
   this.isBeingMoved=true;
 }
 
+class Button {
+  constructor(inX,inY,inImg,inSize){
+    this.x=inX;
+    this.y=inY;
+    this.img = inImg;
+    this.size= inSize;
+  }
+
+  display(){
+    stroke(0);
+    image(this.img,this.x,this.y,this.size,this.size);
+  }
+
+}
+
 let notes=[];
 
 let bpm = 120;
@@ -32,7 +47,8 @@ let metronomeSFX;
 
 let channels = [100, 100, 100, 100];
 
-let pauseB, playB, noloopB, loopB;
+let pauseB, playB, noloopB, loopB, metronomeB, tempoB, tempoDB, tempoUB;
+let playButton;
 
 
 function preload() {
@@ -41,6 +57,10 @@ function preload() {
   playB = loadImage('assets/images/play.png');
   noloopB = loadImage('assets/images/noloop.png');
   loopB = loadImage('assets/images/loop.png');
+  metronomeB=loadImage('assets/images/metronome.png');
+  tempoB=loadImage('assets/images/tempo.png');
+  tempoDB=loadImage('assets/images/tempo_arrow_down.png');
+  tempoUB=loadImage('assets/images/tempo_arrow_up.png');
 
 }
 
@@ -50,7 +70,7 @@ function setup() {
   rectMode(CENTER);
   imageMode(CENTER);
   noStroke();
-
+  playButton = new Button((0.1*width)+(0.09*height),(0.05*height),playB,(0.075*height));
 
 }
 
@@ -85,6 +105,8 @@ function pause() { // Steps for sim if paused.
 
 }
 
+playButton.mousePressed(setToPlay);
+
 function drawNotes() { // Draws the contents of notes[]
 
   for(let i=0;i<notes.length;i++){
@@ -105,7 +127,7 @@ function newNote(){ // Spawns new note
 
 function drawUI() { // Draws the UI.
 
-  let buttons = [pauseB,playB,noloopB,loopB];
+  let buttons = [pauseB, playB, noloopB, loopB, metronomeB, tempoB, tempoDB, tempoUB];
   push();
   background(252, 225, 157);
 
@@ -124,6 +146,12 @@ function drawUI() { // Draws the UI.
     image(buttons[i],(0.1*width)+(i*0.09*height),(0.05*height),(0.075*height),(0.075*height));
   }
 
+}
+
+
+
+function setToPlay(){
+  playing=true;
 }
 
 function upadatePlayhead() { // Updates playhead position.
