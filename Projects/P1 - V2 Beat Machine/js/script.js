@@ -12,39 +12,33 @@ let playhead = {
   last: 0,
 }
 
-function note(){
-  this.x=500;
-  this.y=500;
-  this.size=50;
-  this.sfx=click;
-  this.color= 255;
-  this.played= false;
-  this.channel=1;
-  this.offsetX=0;
-  this.offsetY=0;
-  this.isBeingMoved=true;
+function note() {
+  this.x = 500;
+  this.y = 500;
+  this.size = 50;
+  this.sfx = click;
+  this.color = 255;
+  this.played = false;
+  this.channel = 1;
+  this.offsetX = 0;
+  this.offsetY = 0;
+  this.isBeingMoved = true;
 }
 
-let notes=[];
+let notes = [];
 
 let bpm = 120;
+let metronome = false;
 let metronomeSFX;
 
 let channels = [100, 100, 100, 100];
 
 let pauseB, playB, noloopB, loopB, metronomeB, tempoB, tempoDB, tempoUB;
-let playButton,pauseButton,loopButton,noloopButton;
+let playButton, pauseButton, loopButton, noloopButton, metronomeButton, tempodownButton, tempoupButton, tempoImg, newnoteButton;
 
 
 function preload() {
   click = loadSound('assets/sounds/metronome/metronome.wav');
-  pauseB = loadImage('assets/images/pause.png');
-  noloopB = loadImage('assets/images/noloop.png');
-  loopB = loadImage('assets/images/loop.png');
-  metronomeB=loadImage('assets/images/metronome.png');
-  tempoB=loadImage('assets/images/tempo.png');
-  tempoDB=loadImage('assets/images/tempo_arrow_down.png');
-  tempoUB=loadImage('assets/images/tempo_arrow_up.png');
 
 }
 
@@ -59,22 +53,44 @@ function setup() {
   pauseButton = createImg('assets/images/pause.png');
   loopButton = createImg('assets/images/loop.png');
   noloopButton = createImg('assets/images/noloop.png');
+  metronomeButton = createImg('assets/images/metronome.png');
+  tempoupButton = createImg('assets/images/tempo_arrow_up.png');
+  tempodownButton = createImg('assets/images/tempo_arrow_down.png');
+  tempoImg = createImg('assets/images/tempo.png');
+  newnoteButton = createImg('assets/images/new_note.png');
 
-  playButton.position((0.1*width)+(0.09*height),(0.025*height));
-  playButton.size(0.075*height,0.075*height);
+  playButton.position((0.1 * width), (0.0125 * height));
+  playButton.size(0.075 * height, 0.075 * height);
   playButton.mousePressed(setToPlay);
 
-  pauseButton.position((0.1*width)+(2*(0.09*height)),(0.025*height));
-  pauseButton.size(0.075*height,0.075*height);
+  pauseButton.position((0.1 * width) + (1 * (0.09 * height)), (0.0125 * height));
+  pauseButton.size(0.075 * height, 0.075 * height);
   pauseButton.mousePressed(setToPause);
 
-  loopButton.position((0.1*width)+(3*(0.09*height)),(0.025*height));
-  loopButton.size(0.075*height,0.075*height);
+  loopButton.position((0.1 * width) + (2 * (0.09 * height)), (0.0125 * height));
+  loopButton.size(0.075 * height, 0.075 * height);
   loopButton.mousePressed(setLooping);
 
-  noloopButton.position((0.1*width)+(4*(0.09*height)),(0.025*height));
-  noloopButton.size(0.075*height,0.075*height);
+  noloopButton.position((0.1 * width) + (3 * (0.09 * height)), (0.0125 * height));
+  noloopButton.size(0.075 * height, 0.075 * height);
   noloopButton.mousePressed(setnoloop);
+
+  metronomeButton.position((0.1 * width) + (4 * (0.09 * height)), (0.0125 * height));
+  metronomeButton.size(0.075 * height, 0.075 * height);
+  metronomeButton.mousePressed(toggleMetronome);
+
+  tempoupButton.position((0.1 * width) + (5 * (0.09 * height)), (0.0125 * height));
+  tempoupButton.size(0.075 * height, 0.075 * height);
+
+  tempodownButton.position((0.1 * width) + (6 * (0.09 * height)), (0.0125 * height));
+  tempodownButton.size(0.075 * height, 0.075 * height);
+
+  tempoImg.position((0.1 * width) + (7 * (0.09 * height)), (0.0125 * height));
+  tempoImg.size(0.075 * height, 0.075 * height);
+
+  newnoteButton.position((0.1 * width) + (8 * (0.09 * height)), (0.0125 * height));
+  newnoteButton.size(0.075 * height, 0.075 * height);
+  newnoteButton.mousePressed(newNote);
 
 }
 
@@ -106,20 +122,19 @@ function pause() { // Steps for sim if paused.
 
 function drawNotes() { // Draws the contents of notes[]
 
-  for(let i=0;i<notes.length;i++){
+  for (let i = 0; i < notes.length; i++) {
     push();
     fill(notes[i].color);
-    notes[rect(note.x,note.y,note.size,note.size)];
+    notes[rect(note.x, note.y, note.size, note.size)];
     pop();
   }
 
 
 }
 
-function newNote(){ // Spawns new note
+function newNote() { // Spawns new note
 
   notes.push(new note());
-
 }
 
 function drawUI() { // Draws the UI.
@@ -140,39 +155,53 @@ function drawUI() { // Draws the UI.
 
 }
 
-function setToPlay(){ // Sets the playing variable to true.
-  console.log("Resumed. (Source: Play Button)");
-  playing=true;
-}
-function setToPause(){
-  console.log("Paused. (Source: Pause Button)");
-  playing=false;
-}
-function setLooping(){
-  console.log("Looping: ,",looping, " (Source: Loop Button)");
-  looping=true;
-}
-function setnoloop(){
-  console.log("Looping: ,",looping, " (Source: Noloop Button)");
-  looping=false;
+function toggleMetronome() { // Toggles the metronome on and off.
+  if (metronome) {
+    metronome = false;
+    console.log("Metronome: ", metronome, " (Source: metronome button)");
+  } else {
+    metronome = true;
+    console.log("Metronome: ", metronome, " (Source: metronome button)");
+  }
 }
 
+function setToPlay() { // Sets the playing variable to true.
+
+  playing = true;
+  console.log("Resumed. (Source: Play Button)");
+}
+
+function setToPause() { // Sets the playing variable to false.
+
+  playing = false;
+  console.log("Paused. (Source: Pause Button)");
+}
+
+function setLooping() { // Sets the looping variable to true.
+
+  looping = true;
+  console.log("Looping: ,", looping, " (Source: Loop Button)");
+}
+
+function setnoloop() { // Sets the looping variable to false.
+  looping = false;
+  console.log("Looping: ,", looping, " (Source: Noloop Button)");
+}
 
 function upadatePlayhead() { // Updates playhead position.
 
   if (playhead.isBeingMoved) {
     dragPlayhead();
-  }
-  else if(playing){
+  } else if (playing) {
     playhead.x += tempo();
     if (playhead.x >= width) {
       playhead.x = 0;
-      for(let i=0;i<notes.length;i++){
-        notes[i].played=false;
+      for (let i = 0; i < notes.length; i++) {
+        notes[i].played = false;
       }
       if (!looping) { // check if playlist looping is on
         playing = false;
-        playhead.last=0;
+        playhead.last = 0;
         console.log("Paused. (Looping is: ", looping, ")");
       }
     }
@@ -181,15 +210,15 @@ function upadatePlayhead() { // Updates playhead position.
 
 function tempo() { // Dictates the increment of the playhead.
 
-  let executions = ((60000/bpm)*16)/16.66667;
-  let speed=width/executions;
+  let executions = ((60000 / bpm) * 16) / 16.66667;
+  let speed = width / executions;
   return speed;
 
 }
 
 function dragPlayhead() { // Handles user dragging playhead.
   playhead.x = mouseX + playhead.offsetX;
-  playhead.x = constrain(playhead.x,0,width);
+  playhead.x = constrain(playhead.x, 0, width);
 }
 
 function drawPlayhead() { // Draws the playhead to the screen.
@@ -210,11 +239,11 @@ function playSound() {
 
 function playCh(k) {
   if (!chMuted(k)) {
-    for(let i=0;i<notes.length;i++){
-      let d = dist(playhead.x,notes[i].y,notes[i].x,notes[i].y);
-      if(d<notes[i].size && !(notes[i].played)){
-        note.sfx.play();
-        notes[i].played=true;
+    for (let i = 0; i < notes.length; i++) {
+      let d = dist(playhead.x, notes[i].y, notes[i].x, notes[i].y);
+      if (d < notes[i].size && !(notes[i].played)) {
+        notes[i] .sfx.play();
+        notes[i].played = true;
       }
     }
   }
@@ -223,52 +252,48 @@ function playCh(k) {
 function chMuted(k) { // Checks if channel k is muted.
   if (channels[k + 1] <= 0) {
     return true;
-  }
-  else {
+  } else {
     return false;
   }
 }
 
-function mousePressed(){ // Handles what happens when mouse is clicked.
+function mousePressed() { // Handles what happens when mouse is clicked.
   if (mouseIsInsidePlayhead()) {
     playhead.isBeingMoved = true;
     playhead.offsetX = playhead.x - mouseX;
-  }
-  else if(mouseisInsideNote()){
-    notes[n].isBeingMoved=true;
-    notes[n].offsetX= notes[n].x - mouseX;
-    notes[n].offsetY= notes[n].y - mouseY;
+  } else if (mouseisInsideNote()) {
+    notes[n].isBeingMoved = true;
+    notes[n].offsetX = notes[n].x - mouseX;
+    notes[n].offsetY = notes[n].y - mouseY;
   }
 }
 
-function mouseIsInsidePlayhead(){ // Checks if the mouse is over the playhead.
-  let d = dist(mouseX,mouseY,playhead.x,0.125 * height);
-  if(d < 0.025 * height){
+function mouseIsInsidePlayhead() { // Checks if the mouse is over the playhead.
+  let d = dist(mouseX, mouseY, playhead.x, 0.125 * height);
+  if (d < 0.025 * height) {
     return true;
-  }
-  else{
+  } else {
     return false;
   }
 }
 
-function mouseisInsideNote(){ // Checks if the mouse is inside a note. PLACEHOLDER
+function mouseisInsideNote() { // Checks if the mouse is inside a note. PLACEHOLDER
   return false;
 }
 
-function mouseReleased(){ // Handles mouse releases.
+function mouseReleased() { // Handles mouse releases.
 
-  if (playhead.isBeingMoved){
-    playhead.isBeingMoved=false;
-    playhead.offsetX=0;
-    playhead.offsetY=0;
-    playhead.last=playhead.x;
-  }
-  else{
-    for(let i=0;i<notes.length;i++){
-      if(notes[i].isBeingMoved){
+  if (playhead.isBeingMoved) {
+    playhead.isBeingMoved = false;
+    playhead.offsetX = 0;
+    playhead.offsetY = 0;
+    playhead.last = playhead.x;
+  } else {
+    for (let i = 0; i < notes.length; i++) {
+      if (notes[i].isBeingMoved) {
         notes[i].isBeingMoved = false;
-        notes[i].offsetX=0;
-        notes[i].offsetY=0;
+        notes[i].offsetX = 0;
+        notes[i].offsetY = 0;
       }
     }
   }
@@ -284,12 +309,11 @@ function keyPressed() { // Handles key presses.
         console.log("Paused.");
         playing = false;
         playhead.x = playhead.last;
-      }
-      else {
+      } else {
         console.log("Resumed.");
         playing = true;
-        for(let i=0;i<notes.length;i++){
-          notes[i].played=false;
+        for (let i = 0; i < notes.length; i++) {
+          notes[i].played = false;
         }
       }
       break;
