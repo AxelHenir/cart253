@@ -22,7 +22,12 @@ function note() {
   this.channel = 1;
   this.offsetX = 0;
   this.offsetY = 0;
-  this.isBeingMoved = true;
+  this.isBeingMoved = false;
+}
+
+let channel = {
+  volume:50,
+
 }
 
 let notes = [];
@@ -35,11 +40,14 @@ let channels = [100, 100, 100, 100];
 
 let pauseB, playB, noloopB, loopB, metronomeB, tempoB, tempoDB, tempoUB;
 let playButton, pauseButton, loopButton, noloopButton, metronomeButton, tempodownButton, tempoupButton, tempoImg, newnoteButton;
+let rockin_record;
+
+let target; // Int - The index of the note last selected, click sets it to zero.
 
 
 function preload() {
   click = loadSound('assets/sounds/metronome/metronome.wav');
-
+  rockin_record =loadFont('assets/fonts/gomarice_rockin_record.ttf');
 }
 
 function setup() {
@@ -81,14 +89,16 @@ function setup() {
 
   tempoupButton.position((0.1 * width) + (5 * (0.09 * height)), (0.0125 * height));
   tempoupButton.size(0.075 * height, 0.075 * height);
+  tempoupButton.mousePressed(bpmUp);
 
   tempodownButton.position((0.1 * width) + (6 * (0.09 * height)), (0.0125 * height));
   tempodownButton.size(0.075 * height, 0.075 * height);
+  tempodownButton.mousePressed(bpmDown);
 
   tempoImg.position((0.1 * width) + (7 * (0.09 * height)), (0.0125 * height));
   tempoImg.size(0.075 * height, 0.075 * height);
 
-  newnoteButton.position((0.1 * width) + (8 * (0.09 * height)), (0.0125 * height));
+  newnoteButton.position((0.1 * width) + (9 * (0.09 * height)), (0.0125 * height));
   newnoteButton.size(0.075 * height, 0.075 * height);
   newnoteButton.mousePressed(newNote);
 
@@ -120,11 +130,31 @@ function pause() { // Steps for sim if paused.
 
 }
 
+function bpmUp(){
+  bpm++;
+}
+
+function bpmDown(){
+  bpm--;
+}
+
 function drawNotes() { // Draws the contents of notes[]
 
   for (let i = 0; i < notes.length; i++) {
     push();
+    if(i==target){
+      strokeWeight(2);
+      stroke(255, 158, 229);
+    }
+    else{
+      noStroke();
+    }
+
     fill(notes[i].color);
+    if (notes[i].isBeingMoved){
+      notes[i].x = mouseX + notes[i].offsetX;
+      notes[i].y = mouseY + notes[i].offsetY;
+    }
     rect(notes[i].x,notes[i].y,notes[i].size,notes[i].size);
     pop();
   }
@@ -140,7 +170,7 @@ function newNote() { // Spawns new note
 function drawUI() { // Draws the UI.
 
   push();
-  background(252, 225, 157);
+  background(255, 228, 169);
 
   fill(255, 202, 69);
   rect(width / 2, height, width * 0.9, height * 0.2, height * 0.05); // Bottom Bar UI
@@ -148,8 +178,27 @@ function drawUI() { // Draws the UI.
   fill(255, 211, 99);
   rect(width / 2, 0.5 * height, width, height * 0.75) // Timeline BG
 
+  stroke(255, 228, 169); // Gridlines
+  for (let i=0;i<16;i++){
+    if(i==4 || i==8 || i==12 || i==16){
+      strokeWeight(4);
+    }
+    else{
+      strokeWeight(2);
+    }
+    line(0.0625*i*width, 0.125 * height, 0.0625*i*width, 0.875 * height );
+  }
+
   fill(255, 202, 69);
   rect(width / 2, 0, width, height * 0.2); // Top Bar UI
+  fill(255, 228, 169);
+  rect((0.1 * width) + (8 * (0.0892 * height)), (0.052 * height),0.167 * height, 0.075 * height);
+
+  fill(255, 202, 69); // BPM UI
+  textAlign(CENTER,CENTER);
+  textSize(50);
+  textFont(rockin_record);
+  text(bpm,0.655*width,0.052*height);
 
   pop();
 
@@ -260,9 +309,21 @@ function chMuted(k) { // Checks if channel k is muted.
 }
 
 function mousePressed() { // Handles what happens when mouse is clicked.
+
+  if(mouseY<0.9*height){
+    target=-1;
+  }
+
   if (mouseIsInsidePlayhead()) {
     playhead.isBeingMoved = true;
     playhead.offsetX = playhead.x - mouseX;
+  }
+  else if(mouseY <0.125 * height && mouseY >0.10 * height){
+    playhead.x=mouseX;
+    playhead.last=mouseX;
+    for (let i = 0; i < notes.length; i++) {
+      notes[i].played = false;
+    }
   }
   else{
     mouseisInsideNote();
@@ -286,11 +347,13 @@ function mouseIsInsidePlayhead() { // Checks if mouse is inside the playhead.
 
 }
 
-function mouseisInsideNote() { // Checks if the mouse is inside a note. PLACEHOLDER
+function mouseisInsideNote() { // Checks if the mouse is inside a note.
   for (let i=0;i<notes.length;i++){
     let d = dist(notes[i].x,notes[i].y,mouseX,mouseY);
     if(d<=notes[i].size){
       pickupNote(i);
+      target=i;
+      break;
     }
   }
 }
@@ -298,6 +361,9 @@ function mouseisInsideNote() { // Checks if the mouse is inside a note. PLACEHOL
 function mouseReleased() { // Handles mouse releases.
 
   if (playhead.isBeingMoved) {
+    for (let i = 0; i < notes.length; i++) {
+      notes[i].played = false;
+    }
     playhead.isBeingMoved = false;
     playhead.offsetX = 0;
     playhead.offsetY = 0;
@@ -305,6 +371,9 @@ function mouseReleased() { // Handles mouse releases.
   } else {
     for (let i = 0; i < notes.length; i++) {
       if (notes[i].isBeingMoved) {
+        for (let i = 0; i < notes.length; i++) {
+          notes[i].played = false;
+        }
         notes[i].isBeingMoved = false;
         notes[i].offsetX = 0;
         notes[i].offsetY = 0;
