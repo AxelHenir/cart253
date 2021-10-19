@@ -125,7 +125,7 @@ function drawNotes() { // Draws the contents of notes[]
   for (let i = 0; i < notes.length; i++) {
     push();
     fill(notes[i].color);
-    notes[rect(note.x, note.y, note.size, note.size)];
+    rect(notes[i].x,notes[i].y,notes[i].size,notes[i].size);
     pop();
   }
 
@@ -186,13 +186,15 @@ function setLooping() { // Sets the looping variable to true.
 function setnoloop() { // Sets the looping variable to false.
   looping = false;
   console.log("Looping: ,", looping, " (Source: Noloop Button)");
+
 }
 
 function upadatePlayhead() { // Updates playhead position.
 
   if (playhead.isBeingMoved) {
     dragPlayhead();
-  } else if (playing) {
+  }
+  else if (playing) {
     playhead.x += tempo();
     if (playhead.x >= width) {
       playhead.x = 0;
@@ -235,7 +237,7 @@ function drawPlayhead() { // Draws the playhead to the screen.
 
 function playSound() {
   playCh(1);
-}
+  }
 
 function playCh(k) {
   if (!chMuted(k)) {
@@ -261,24 +263,36 @@ function mousePressed() { // Handles what happens when mouse is clicked.
   if (mouseIsInsidePlayhead()) {
     playhead.isBeingMoved = true;
     playhead.offsetX = playhead.x - mouseX;
-  } else if (mouseisInsideNote()) {
-    notes[n].isBeingMoved = true;
-    notes[n].offsetX = notes[n].x - mouseX;
-    notes[n].offsetY = notes[n].y - mouseY;
+  }
+  else{
+    mouseisInsideNote();
   }
 }
 
-function mouseIsInsidePlayhead() { // Checks if the mouse is over the playhead.
-  let d = dist(mouseX, mouseY, playhead.x, 0.125 * height);
-  if (d < 0.025 * height) {
+function pickupNote(n){ // note with index n will be set as being dragged.
+  notes[n].isBeingMoved = true;
+  notes[n].offsetX = notes[n].x - mouseX;
+  notes[n].offsetY = notes[n].y - mouseY;
+}
+
+function mouseIsInsidePlayhead() { // Checks if mouse is inside the playhead.
+  let d = dist(playhead.x,0.113 * height, mouseX,mouseY);
+  if(d<=0.025 * height){
     return true;
-  } else {
+  }
+  else{
     return false;
   }
+
 }
 
 function mouseisInsideNote() { // Checks if the mouse is inside a note. PLACEHOLDER
-  return false;
+  for (let i=0;i<notes.length;i++){
+    let d = dist(notes[i].x,notes[i].y,mouseX,mouseY);
+    if(d<=notes[i].size){
+      pickupNote(i);
+    }
+  }
 }
 
 function mouseReleased() { // Handles mouse releases.
@@ -300,10 +314,9 @@ function mouseReleased() { // Handles mouse releases.
 
 }
 
-function keyPressed() { // Handles key presses.
+function keyPressed(){ // Handles keyboard inputs.
 
-  switch (keyCode) {
-
+  switch(keyCode){
     case 32: // Spacebar - Pause/Unpause
       if (playing) {
         console.log("Paused.");
@@ -327,6 +340,5 @@ function keyPressed() { // Handles key presses.
         looping = true;
       }
       break;
-
   }
 }
