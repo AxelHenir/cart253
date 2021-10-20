@@ -16,13 +16,14 @@ function note() {
   this.x = 500;
   this.y = 500;
   this.size = 50;
-  this.sfx = click;
+  this.sfx = click ;
   this.color = 255;
   this.played = false;
   this.channel = 1;
   this.offsetX = 0;
   this.offsetY = 0;
   this.isBeingMoved = false;
+  this.volume=50;
 }
 
 let channel = {
@@ -40,14 +41,103 @@ let channels = [100, 100, 100, 100];
 
 let pauseB, playB, noloopB, loopB, metronomeB, tempoB, tempoDB, tempoUB;
 let playButton, pauseButton, loopButton, noloopButton, metronomeButton, tempodownButton, tempoupButton, tempoImg, newnoteButton;
+let deleteNoteButton,spawnCopyNoteButton,selectSFXButton;
+let clapsButton,hhcButton,hhoButton,kicksButton,percsButton,shakersButton,snaresButton,snapsButton,rimshotsButton;
 let rockin_record;
 
-let target; // Int - The index of the note last selected, click sets it to zero.
+let spawningNewNote=false;
+let selectingSFX=false;
 
+let target; // Int - The index of the note last selected, click sets it to zero.
+let selection=0; // Int - The index of the last file explored.
+let option=-1; // Int - the index of the SFX option from selection.
+
+let rimshot1,rimshot2,rimshot3,rimshot4;
+let snare1,snare2,snare3,snare4,snare5,snare6,snare7,snare8,snare9,snare10;
+let snap1,snap2,snap3,snap4,snap5,snap6;
+let shaker1,shaker2,shaker3,shaker4,shaker5,shaker6;
+let perc1,perc2,perc3,perc4,perc5,perc6,perc7,perc8,perc9,perc10;
+let kick1,kick2,kick3,kick4,kick5,kick6,kick7;
+let hhc1,hhc2,hhc3,hhc4,hhc5,hhc6;
+let hho1,hho2,hho3,hho4,hho5;
+let clap1,clap2,clap3,clap4,clap5,clap6,clap7,clap8;
 
 function preload() {
   click = loadSound('assets/sounds/metronome/metronome.wav');
   rockin_record =loadFont('assets/fonts/gomarice_rockin_record.ttf');
+
+  rimshot1=loadSound('assets/sounds/LoFi/Snares + Rimshots/Rimshot1.wav');
+  rimshot2=loadSound('assets/sounds/LoFi/Snares + Rimshots/Rimshot2.wav');
+  rimshot3=loadSound('assets/sounds/LoFi/Snares + Rimshots/Rimshot3.wav');
+  rimshot4=loadSound('assets/sounds/LoFi/Snares + Rimshots/Rimshot4.wav');
+/*
+  snare1=
+  snare2=
+  snare3=
+  snare4=
+  snare5=
+  snare6=
+  snare7=
+  snare8=
+  snare9=
+  snare10=
+
+  snap1=
+  snap2=
+  snap3=
+  snap4=
+  snap5=
+  snap6=
+
+  shaker1=
+  shaker2=
+  shaker3=
+  shaker4=
+  shaker5=
+  shaker6=
+
+  perc1=
+  perc2=
+  perc3=
+  perc4=
+  perc5=
+  perc6=
+  perc7=
+  perc8=
+  perc9=
+  perc10=
+
+  kick1=
+  kick2=
+  kick3=
+  kick4=
+  kick5=
+  kick6=
+  kick7=
+
+  hhc1=
+  hhc2=
+  hhc3=
+  hhc4=
+  hhc5=
+  hhc6=
+
+  hho1=
+  hho2=
+  hho3=
+  hho4=
+  hho5=
+
+  clap1=
+  clap2=
+  clap3=
+  clap4=
+  clap5=
+  clap6=
+  clap7=
+  clap8=
+
+  */
 }
 
 function setup() {
@@ -66,6 +156,8 @@ function setup() {
   tempodownButton = createImg('assets/images/tempo_arrow_down.png');
   tempoImg = createImg('assets/images/tempo.png');
   newnoteButton = createImg('assets/images/new_note.png');
+
+  // Top Bar UI
 
   playButton.position((0.1 * width), (0.0125 * height));
   playButton.size(0.075 * height, 0.075 * height);
@@ -102,6 +194,81 @@ function setup() {
   newnoteButton.size(0.075 * height, 0.075 * height);
   newnoteButton.mousePressed(newNote);
 
+ //Botton Bar UI
+
+  deleteNoteButton = createImg('assets/images/trash.png');
+  spawnCopyNoteButton = createImg('assets/images/copy.png');
+  selectSFXButton = createImg('assets/images/sfx.png');// PLACEHODLER
+
+  deleteNoteButton.position((0.1 * width), (0.9125 * height));
+  deleteNoteButton.size(0.075 * height, 0.075 * height);
+  deleteNoteButton.mousePressed(deleteTargetNote);
+
+  spawnCopyNoteButton.position((0.1 * width)+ (1 * (0.09 * height)), (0.9125 * height));
+  spawnCopyNoteButton.size(0.075 * height, 0.075 * height);
+  spawnCopyNoteButton.mousePressed(spawnCopyNote);
+
+  selectSFXButton.position((0.1 * width)+ (2 * (0.09 * height)), (0.9125 * height));
+  selectSFXButton.size(0.075 * height, 0.075 * height);
+  selectSFXButton.mousePressed(selectSFX);
+
+  //SFX Selection UI
+
+  clapsButton = createButton("Claps");
+  clapsButton.position(0.04*width,0.215*height);
+  clapsButton.size(0.2*width,0.0755*height);
+  clapsButton.style('background-color:#ffe4a9; color:#f7b818; border-style:hidden; font-family:"Helvetica"; font-size:2em');
+  clapsButton.mousePressed(clapsSelected);
+
+
+  hhcButton = createButton("Hi Hat Open");
+  hhcButton.position(0.26*width,0.215*height);
+  hhcButton.size(0.2*width,0.0775*height);
+  hhcButton.style('background-color:#ffe4a9; color:#f7b818; border-style:hidden; font-family:"Helvetica"; font-size:2em');
+  hhcButton.mousePressed(hhcSelected);
+
+
+  hhoButton = createButton("Hi Hat Closed");
+  hhoButton.position(0.26*width,0.315*height);
+  hhoButton.size(0.2*width,0.0775*height);
+  hhoButton.style('background-color:#ffe4a9; color:#f7b818; border-style:hidden; font-family:"Helvetica"; font-size:2em');
+  hhoButton.mousePressed(hhoSelected);
+
+  kicksButton = createButton("Kicks");
+  kicksButton.position(0.04*width,0.315*height);
+  kicksButton.size(0.2*width,0.0775*height);
+  kicksButton.style('background-color:#ffe4a9; color:#f7b818; border-style:hidden; font-family:"Helvetica"; font-size:2em');
+  kicksButton.mousePressed(kicksSelected);
+
+  percsButton = createButton("Percussion");
+  percsButton.position(0.26*width,0.415*height);
+  percsButton.size(0.2*width,0.0775*height);
+  percsButton.style('background-color:#ffe4a9; color:#f7b818; border-style:hidden; font-family:"Helvetica"; font-size:2em');
+  percsButton.mousePressed(percsSelected);
+
+  shakersButton = createButton("Shakers");
+  shakersButton.position(0.04*width,0.415*height);
+  shakersButton.size(0.2*width,0.0775*height);
+  shakersButton.style('background-color:#ffe4a9; color:#f7b818; border-style:hidden; font-family:"Helvetica"; font-size:2em');
+  shakersButton.mousePressed(shakersSelected);
+
+  snapsButton = createButton("Snaps");
+  snapsButton.position(0.26*width,0.515*height);
+  snapsButton.size(0.2*width,0.0775*height);
+  snapsButton.style('background-color:#ffe4a9; color:#f7b818; border-style:hidden; font-family:"Helvetica"; font-size:2em');
+  snapsButton.mousePressed(snapsSelected);
+
+  snaresButton = createButton("Snares");
+  snaresButton.position(0.04*width,0.515*height);
+  snaresButton.size(0.2*width,0.0775*height);
+  snaresButton.style('background-color:#ffe4a9; color:#f7b818; border-style:hidden; font-family:"Helvetica"; font-size:2em');
+  snaresButton.mousePressed(snaresSelected);
+
+  rimshotsButton = createButton("Rimshots");
+  rimshotsButton.position(0.04*width,0.615*height);
+  rimshotsButton.size(0.2*width,0.0775*height);
+  rimshotsButton.style('background-color:#ffe4a9; color:#f7b818; border-style:hidden; font-family:"Helvetica"; font-size:2em');
+  rimshotsButton.mousePressed(rimshotsSelected);
 }
 
 function draw() {
@@ -113,6 +280,35 @@ function draw() {
   }
 
 }
+
+function clapsSelected(){
+  selection = 0;
+}
+function hhcSelected(){
+  selection = 1;
+}
+function hhoSelected(){
+  selection = 2;
+}
+function kicksSelected(){
+  selection = 3;
+}
+function percsSelected(){
+  selection = 4;
+}
+function shakersSelected(){
+  selection = 5;
+}
+function snapsSelected(){
+  selection = 6;
+}
+function snaresSelected(){
+  selection = 7;
+}
+function rimshotsSelected(){
+  selection = 8;
+}
+
 
 function play() { // Steps for sim if not paused.
   drawUI(); // Draw UI.
@@ -127,6 +323,12 @@ function pause() { // Steps for sim if paused.
   drawNotes();
   upadatePlayhead(); // Update position of playhead.
   drawPlayhead(); // Draw playhead.
+
+}
+
+function selectSFX(){ // Opens menus to select SFX.
+
+  selectingSFX=true;
 
 }
 
@@ -164,7 +366,12 @@ function drawNotes() { // Draws the contents of notes[]
 
 function newNote() { // Spawns new note
 
-  notes.push(new note());
+  if(!spawningNewNote){
+    spawningNewNote=true;
+    notes.push(new note());
+    notes[notes.length-1].isBeingMoved=true;
+  }
+
 }
 
 function drawUI() { // Draws the UI.
@@ -198,10 +405,199 @@ function drawUI() { // Draws the UI.
   textAlign(CENTER,CENTER);
   textSize(50);
   textFont(rockin_record);
-  text(bpm,0.655*width,0.052*height);
+  text(bpm,(0.1 * width) + (8 * (0.0935 * height)),0.052*height);
 
   pop();
 
+  if (target>=0){ // Bottom bar note-specific UI
+    deleteNoteButton.show();
+    spawnCopyNoteButton.show();
+    selectSFXButton.show();
+  }
+  else{
+    deleteNoteButton.hide();
+    spawnCopyNoteButton.hide();
+    selectSFXButton.hide();
+  }
+
+  if (selectingSFX){ // UI for selecting SFX.
+
+    push();
+    fill(255, 202, 69);
+    stroke(255, 228, 169);
+    strokeWeight(4);
+    rect(0.25*width,0.5*height,0.45*width,0.7*height);
+    rect(0.75*width,0.5*height,0.45*width,0.7*height);
+
+    fill(255, 228, 169)
+    rect(0.25*width,0.175*height,0.45*width,0.05*height);
+    rect(0.75*width,0.175*height,0.45*width,0.05*height);
+
+    fill(255, 202, 69);
+    textAlign(CENTER,CENTER);
+    textSize(50);
+    textFont(rockin_record);
+    text("SFX - Categories",0.25*width,0.175*height);
+
+
+    clapsButton.show();
+    hhcButton.show();
+    hhoButton.show();
+    kicksButton.show();
+    percsButton.show();
+    shakersButton.show();
+    snaresButton.show();
+    snapsButton.show();
+    rimshotsButton.show();
+
+    if(selection>0){
+      drawSelection();
+    }
+
+    pop();
+  }
+  else{
+    clapsButton.hide();
+    hhcButton.hide();
+    hhoButton.hide();
+    kicksButton.hide();
+    percsButton.hide();
+    shakersButton.hide();
+    snaresButton.hide();
+    snapsButton.hide();
+    rimshotsButton.hide();
+  }
+
+}
+
+function drawSelection(){
+
+  switch(selection){
+    case 0:
+      text("Category - Claps",0.75*width,0.175*height);
+      let claps =[];
+      break;
+    case 1:
+      text("Category - HH Open",0.75*width,0.175*height);
+      let hihatopen =[];
+      break;
+    case 2:
+      let hihatclosed =[];
+      text("Category - HH Closed",0.75*width,0.175*height);
+      break;
+    case 3:
+      text("Category - Kicks",0.75*width,0.175*height);
+      let kicks =[];
+      break;
+    case 4:
+      text("Category - Percussion",0.75*width,0.175*height);
+      let perc =[];
+      break;
+    case 5:
+      text("Category - Shakers",0.75*width,0.175*height);
+      let shakers =[];
+      break;
+    case 6:
+      text("Category - Snaps",0.75*width,0.175*height);
+      let snaps =[];
+      break;
+    case 7:
+      text("Category - Snares",0.75*width,0.175*height);
+      let snares =[];
+      break;
+    case 8: // Rimshots
+      text("Category - Rimshots",0.75*width,0.175*height);
+      let rimshots=[rimshot1,rimshot2,rimshot3,rimshot4];
+      let r=0;
+      let c=0;
+      for(let i=0;i<rimshots.length;i++){
+        push();
+        noStroke();
+        fill(255, 228, 169);
+        ellipse(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height) ,0.09*width,0.09*width);
+        fill(255, 202, 69);
+        text(i+1,width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height));
+        if(c== 0){
+          c=1;
+        }
+        else {
+          c=0;
+          r++;
+        }
+        pop();
+      }
+      break;
+  }
+}
+
+function assignSFX(){
+  switch(selection){
+    case 0:
+      let claps =[];
+      break;
+    case 1:
+
+      let hihatopen =[];
+      break;
+    case 2:
+      let hihatclosed =[];
+
+      break;
+    case 3:
+
+      let kicks =[];
+      break;
+    case 4:
+
+      let perc =[];
+      break;
+    case 5:
+
+      let shakers =[];
+      break;
+    case 6:
+
+      let snaps =[];
+      break;
+    case 7:
+
+      let snares =[];
+      break;
+    case 8: // Rimshots
+
+      let rimshots=[rimshot1,rimshot2,rimshot3,rimshot4];
+      let r=0;
+      let c=0;
+      let d;
+      for(let i=0;i<rimshots.length;i++){
+        d=dist(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height), mouseX,mouseY);
+        if(d<=0.09*width){
+          notes[target].sfx=rimshots.i;
+          selectingSFX=false;
+          break;
+        }
+      break;
+    }
+}
+}
+
+function deleteTargetNote(){ // Call to delete target note.
+  console.log("Deleting target: ",target," Source: Delete target button");
+  notes.splice(target,1);
+  target=-1;
+}
+
+function spawnCopyNote(){ // Spawns a copy of target note.
+  newNote();
+  notes[notes.length-1].size=notes[target].size;
+  notes[notes.length-1].sfx=notes[target].sfx;
+  notes[notes.length-1].color=notes[target].color;
+  notes[notes.length-1].channel=notes[target].channel;
+}
+
+function setNoteVolume(target, x){ // Sets the valume of target note to x.
+  notes[target].volume=x;
+  notes[target].volume=constrain(notes[target].volume,0,100);
 }
 
 function toggleMetronome() { // Toggles the metronome on and off.
@@ -293,7 +689,7 @@ function playCh(k) {
     for (let i = 0; i < notes.length; i++) {
       let d = dist(playhead.x, notes[i].y, notes[i].x, notes[i].y);
       if (d < notes[i].size && !(notes[i].played)) {
-        notes[i] .sfx.play();
+        notes[i].sfx.play();
         notes[i].played = true;
       }
     }
@@ -308,32 +704,11 @@ function chMuted(k) { // Checks if channel k is muted.
   }
 }
 
-function mousePressed() { // Handles what happens when mouse is clicked.
-
-  if(mouseY<0.9*height){
-    target=-1;
-  }
-
-  if (mouseIsInsidePlayhead()) {
-    playhead.isBeingMoved = true;
-    playhead.offsetX = playhead.x - mouseX;
-  }
-  else if(mouseY <0.125 * height && mouseY >0.10 * height){
-    playhead.x=mouseX;
-    playhead.last=mouseX;
-    for (let i = 0; i < notes.length; i++) {
-      notes[i].played = false;
-    }
-  }
-  else{
-    mouseisInsideNote();
-  }
-}
-
 function pickupNote(n){ // note with index n will be set as being dragged.
   notes[n].isBeingMoved = true;
   notes[n].offsetX = notes[n].x - mouseX;
   notes[n].offsetY = notes[n].y - mouseY;
+  spawningNewNote=false;
 }
 
 function mouseIsInsidePlayhead() { // Checks if mouse is inside the playhead.
@@ -370,10 +745,11 @@ function mouseReleased() { // Handles mouse releases.
     playhead.last = playhead.x;
   } else {
     for (let i = 0; i < notes.length; i++) {
-      if (notes[i].isBeingMoved) {
-        for (let i = 0; i < notes.length; i++) {
-          notes[i].played = false;
+      if (notes[i].isBeingMoved && !spawningNewNote) {
+        for (let j = 0; j < notes.length; j++) {
+          notes[j].played = false;
         }
+        notes[i].y=constrain(notes[i].y,0.15*height,0.85*height);
         notes[i].isBeingMoved = false;
         notes[i].offsetX = 0;
         notes[i].offsetY = 0;
@@ -381,6 +757,35 @@ function mouseReleased() { // Handles mouse releases.
     }
   }
 
+}
+
+function mousePressed() { // Handles what happens when mouse is clicked.
+
+  if(mouseY<0.9*height){
+    if(!selectingSFX){
+      target=-1;
+    }
+  }
+
+  if (mouseIsInsidePlayhead()) {
+    playhead.isBeingMoved = true;
+    playhead.offsetX = playhead.x - mouseX;
+    selectingSFX=false;
+  }
+  else if(mouseY <0.125 * height && mouseY >0.10 * height){
+    playhead.x=mouseX;
+    playhead.last=mouseX;
+    for (let i = 0; i < notes.length; i++) {
+      notes[i].played = false;
+    }
+
+  }
+  else if(selectingSFX){
+    assignSFX();
+  }
+  else{
+    mouseisInsideNote();
+  }
 }
 
 function keyPressed(){ // Handles keyboard inputs.
@@ -409,5 +814,13 @@ function keyPressed(){ // Handles keyboard inputs.
         looping = true;
       }
       break;
+
+    case 8: // Backspace  - Delete Note
+      console.log("Deleting target: ",target, "Source: backspace");
+      if(target>=0){
+        deleteTargetNote();
+      }
+      target=-1;
+
   }
 }
