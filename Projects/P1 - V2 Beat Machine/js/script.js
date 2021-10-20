@@ -47,9 +47,10 @@ let rockin_record;
 
 let spawningNewNote=false;
 let selectingSFX=false;
+let selectingOption=false;
 
-let target; // Int - The index of the note last selected, click sets it to zero.
-let selection=0; // Int - The index of the last file explored.
+let target=-1; // Int - The index of the note last selected, click sets it to zero.
+let selection=-1; // Int - The index of the last file explored.
 let option=-1; // Int - the index of the SFX option from selection.
 
 let rimshot1,rimshot2,rimshot3,rimshot4;
@@ -144,6 +145,7 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   background(235, 215, 138);
   rectMode(CENTER);
+  ellipseMode(CENTER);
   imageMode(CENTER);
   noStroke();
 
@@ -273,6 +275,7 @@ function setup() {
 
 function draw() {
 
+  //console.log("Target: ",target," Selection: ",selection," Selecting SFX:",selectingSFX, "Selecting option:",selectingOption, "Option: ",option);
   if (playing) { // Playing or Paused
     play();
   } else {
@@ -283,30 +286,39 @@ function draw() {
 
 function clapsSelected(){
   selection = 0;
+  selectingOption=true;
 }
 function hhcSelected(){
   selection = 1;
+  selectingOption=true;
 }
 function hhoSelected(){
   selection = 2;
+  selectingOption=true;
 }
 function kicksSelected(){
   selection = 3;
+  selectingOption=true;
 }
 function percsSelected(){
   selection = 4;
+  selectingOption=true;
 }
 function shakersSelected(){
   selection = 5;
+  selectingOption=true;
 }
 function snapsSelected(){
   selection = 6;
+  selectingOption=true;
 }
 function snaresSelected(){
   selection = 7;
+  selectingOption=true;
 }
 function rimshotsSelected(){
   selection = 8;
+  selectingOption=true;
 }
 
 
@@ -329,7 +341,6 @@ function pause() { // Steps for sim if paused.
 function selectSFX(){ // Opens menus to select SFX.
 
   selectingSFX=true;
-
 }
 
 function bpmUp(){
@@ -370,6 +381,7 @@ function newNote() { // Spawns new note
     spawningNewNote=true;
     notes.push(new note());
     notes[notes.length-1].isBeingMoved=true;
+    selectingOption=false;
   }
 
 }
@@ -470,7 +482,7 @@ function drawUI() { // Draws the UI.
 
 }
 
-function drawSelection(){
+function drawSelection(){ // Draws the content of the SFX selection folder.
 
   switch(selection){
     case 0:
@@ -514,7 +526,7 @@ function drawSelection(){
         push();
         noStroke();
         fill(255, 228, 169);
-        ellipse(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height) ,0.09*width,0.09*width);
+        ellipse(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height) ,0.08*width,0.08*width);
         fill(255, 202, 69);
         text(i+1,width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height));
         if(c== 0){
@@ -530,55 +542,212 @@ function drawSelection(){
   }
 }
 
-function assignSFX(){
+function assignSFX(){ // Tries to assign new SFX based on mouse position.
+
+  let r=0;
+  let c=0;
+  let d;
+
   switch(selection){
-    case 0:
+    case 0: // Claps
       let claps =[];
-      break;
-    case 1:
-
-      let hihatopen =[];
-      break;
-    case 2:
-      let hihatclosed =[];
-
-      break;
-    case 3:
-
-      let kicks =[];
-      break;
-    case 4:
-
-      let perc =[];
-      break;
-    case 5:
-
-      let shakers =[];
-      break;
-    case 6:
-
-      let snaps =[];
-      break;
-    case 7:
-
-      let snares =[];
-      break;
-    case 8: // Rimshots
-
-      let rimshots=[rimshot1,rimshot2,rimshot3,rimshot4];
-      let r=0;
-      let c=0;
-      let d;
-      for(let i=0;i<rimshots.length;i++){
+      for(let i=0;i<claps.length;i++){
         d=dist(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height), mouseX,mouseY);
-        if(d<=0.09*width){
-          notes[target].sfx=rimshots.i;
+        if(d<=(0.08*width)/2){
+          option=i;
+          notes[target].sfx = claps[i];
           selectingSFX=false;
           break;
         }
+        else{
+          if(c== 0){
+            c++;
+          }
+          else {
+            c=0;
+            r++;
+          }
+        }
+      }
+      break;
+    case 1: // Hi Hat Open
+
+      let hihatopen =[];
+      for(let i=0;i<hihatopen.length;i++){
+        d=dist(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height), mouseX,mouseY);
+        if(d<=(0.08*width)/2){
+          option=i;
+          notes[target].sfx = hihatopen[i];
+          selectingSFX=false;
+          break;
+        }
+        else{
+          if(c== 0){
+            c++;
+          }
+          else {
+            c=0;
+            r++;
+          }
+        }
+      }
+      break;
+    case 2: // Hi Hat Closed
+      let hihatclosed =[];
+      for(let i=0;i<hihatclosed.length;i++){
+        d=dist(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height), mouseX,mouseY);
+        if(d<=(0.08*width)/2){
+          option=i;
+          notes[target].sfx = hihatclosed[i];
+          selectingSFX=false;
+          break;
+        }
+        else{
+          if(c== 0){
+            c++;
+          }
+          else {
+            c=0;
+            r++;
+          }
+        }
+      }
+
+      break;
+    case 3: // Kicks
+
+      let kicks =[];
+      for(let i=0;i<kicks.length;i++){
+        d=dist(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height), mouseX,mouseY);
+        if(d<=(0.08*width)/2){
+          option=i;
+          notes[target].sfx = kicks[i];
+          selectingSFX=false;
+          break;
+        }
+        else{
+          if(c== 0){
+            c++;
+          }
+          else {
+            c=0;
+            r++;
+          }
+        }
+      }
+      break;
+    case 4: // Percussion
+
+      let perc =[];
+      for(let i=0;i<perc.length;i++){
+        d=dist(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height), mouseX,mouseY);
+        if(d<=(0.08*width)/2){
+          option=i;
+          notes[target].sfx = perc[i];
+          selectingSFX=false;
+          break;
+        }
+        else{
+          if(c== 0){
+            c++;
+          }
+          else {
+            c=0;
+            r++;
+          }
+        }
+      }
+      break;
+    case 5: // Shakers
+
+      let shakers =[shaker1,shaker2,shaker3,shaker4,shaker5,shaker6];
+      for(let i=0;i<shakers.length;i++){
+        d=dist(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height), mouseX,mouseY);
+        if(d<=(0.08*width)/2){
+          option=i;
+          notes[target].sfx = shakers[i];
+          selectingSFX=false;
+          break;
+        }
+        else{
+          if(c== 0){
+            c++;
+          }
+          else {
+            c=0;
+            r++;
+          }
+        }
+      }
+      break;
+    case 6: // Snaps
+
+      let snaps =[snap1,snap2,snap3,snap4,snap5,snap6];
+      for(let i=0;i<snaps.length;i++){
+        d=dist(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height), mouseX,mouseY);
+        if(d<=(0.08*width)/2){
+          option=i;
+          notes[target].sfx = snaps[i];
+          selectingSFX=false;
+          break;
+        }
+        else{
+          if(c== 0){
+            c++;
+          }
+          else {
+            c=0;
+            r++;
+          }
+        }
+      }
+      break;
+    case 7: // Snares
+
+      let snares =[snare1,snare2,snare3,snare4,snare5,snare6,snare7,snare8,snare9,snare10];
+      for(let i=0;i<snares.length;i++){
+        d=dist(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height), mouseX,mouseY);
+        if(d<=(0.08*width)/2){
+          option=i;
+          notes[target].sfx = snares[i];
+          selectingSFX=false;
+          break;
+        }
+        else{
+          if(c== 0){
+            c++;
+          }
+          else {
+            c=0;
+            r++;
+          }
+        }
+      }
+
+      break;
+    case 8: // Rimshots
+      let rimshots=[rimshot1,rimshot2,rimshot3,rimshot4];
+
+      for(let i=0;i<rimshots.length;i++){
+        d=dist(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height), mouseX,mouseY);
+        if(d<=(0.08*width)/2){
+          option=i;
+          notes[target].sfx = rimshots[i];
+          selectingSFX=false;
+          break;
+        }
+        else{
+          if(c== 0){
+            c++;
+          }
+          else {
+            c=0;
+            r++;
+          }
+        }
+      }
       break;
     }
-}
 }
 
 function deleteTargetNote(){ // Call to delete target note.
@@ -780,7 +949,7 @@ function mousePressed() { // Handles what happens when mouse is clicked.
     }
 
   }
-  else if(selectingSFX){
+  else if(selectingOption && selectingSFX){
     assignSFX();
   }
   else{
