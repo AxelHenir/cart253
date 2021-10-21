@@ -4,6 +4,7 @@
 let playing = false;
 let looping = true;
 let click;
+let FR=60;
 
 let playhead = {
   x: 0,
@@ -28,14 +29,14 @@ function note() {
 
 let channel = {
   volume:50,
-
 }
 
 let notes = [];
 
-let bpm = 120;
+let bpm = 120 ;
 let metronome = false;
 let metronomeSFX;
+let currentExec=0;
 
 let channels = [100, 100, 100, 100];
 
@@ -71,74 +72,73 @@ function preload() {
   rimshot2=loadSound('assets/sounds/LoFi/Snares + Rimshots/Rimshot2.wav');
   rimshot3=loadSound('assets/sounds/LoFi/Snares + Rimshots/Rimshot3.wav');
   rimshot4=loadSound('assets/sounds/LoFi/Snares + Rimshots/Rimshot4.wav');
-/*
-  snare1=
-  snare2=
-  snare3=
-  snare4=
-  snare5=
-  snare6=
-  snare7=
-  snare8=
-  snare9=
-  snare10=
 
-  snap1=
-  snap2=
-  snap3=
-  snap4=
-  snap5=
-  snap6=
+  snare1=loadSound('assets/sounds/LoFi/Snares + Rimshots/Snare (1).wav');
+  snare2=loadSound('assets/sounds/LoFi/Snares + Rimshots/Snare (2).wav');
+  snare3=loadSound('assets/sounds/LoFi/Snares + Rimshots/Snare (3).wav');
+  snare4=loadSound('assets/sounds/LoFi/Snares + Rimshots/Snare (4).wav');
+  snare5=loadSound('assets/sounds/LoFi/Snares + Rimshots/Snare (5).wav');
+  snare6=loadSound('assets/sounds/LoFi/Snares + Rimshots/Snare (6).wav');
+  snare7=loadSound('assets/sounds/LoFi/Snares + Rimshots/Snare (7).wav');
+  snare8=loadSound('assets/sounds/LoFi/Snares + Rimshots/Snare (8).wav');
+  snare9=loadSound('assets/sounds/LoFi/Snares + Rimshots/Snare (9).wav');
+  snare10=loadSound('assets/sounds/LoFi/Snares + Rimshots/Snare (10).wav');
 
-  shaker1=
-  shaker2=
-  shaker3=
-  shaker4=
-  shaker5=
-  shaker6=
+  snap1=loadSound('assets/sounds/LoFi/Snaps/Snap (1).wav');
+  snap2=loadSound('assets/sounds/LoFi/Snaps/Snap (2).wav');
+  snap3=loadSound('assets/sounds/LoFi/Snaps/Snap (3).wav');
+  snap4=loadSound('assets/sounds/LoFi/Snaps/Snap (4).wav');
+  snap5=loadSound('assets/sounds/LoFi/Snaps/Snap (5).wav');
+  snap6=loadSound('assets/sounds/LoFi/Snaps/Snap (6).wav');
 
-  perc1=
-  perc2=
-  perc3=
-  perc4=
-  perc5=
-  perc6=
-  perc7=
-  perc8=
-  perc9=
-  perc10=
+  shaker1=loadSound('assets/sounds/LoFi/Shakers/Shaker (1).wav');
+  shaker2=loadSound('assets/sounds/LoFi/Shakers/Shaker (2).wav');
+  shaker3=loadSound('assets/sounds/LoFi/Shakers/Shaker (3).wav');
+  shaker4=loadSound('assets/sounds/LoFi/Shakers/Shaker (4).wav');
+  shaker5=loadSound('assets/sounds/LoFi/Shakers/Shaker (5).wav');
+  shaker6=loadSound('assets/sounds/LoFi/Shakers/Shaker (6).wav');
 
-  kick1=
-  kick2=
-  kick3=
-  kick4=
-  kick5=
-  kick6=
-  kick7=
+  perc1=loadSound('assets/sounds/LoFi/Percussion/Perc (1).wav');
+  perc2=loadSound('assets/sounds/LoFi/Percussion/Perc (2).wav');
+  perc3=loadSound('assets/sounds/LoFi/Percussion/Perc (3).wav');
+  perc4=loadSound('assets/sounds/LoFi/Percussion/Perc (4).wav');
+  perc5=loadSound('assets/sounds/LoFi/Percussion/Perc (5).wav');
+  perc6=loadSound('assets/sounds/LoFi/Percussion/Perc (6).wav');
+  perc7=loadSound('assets/sounds/LoFi/Percussion/Perc (7).wav');
+  perc8=loadSound('assets/sounds/LoFi/Percussion/Perc (8).wav');
+  perc9=loadSound('assets/sounds/LoFi/Percussion/Perc (9).wav');
+  perc10=loadSound('assets/sounds/LoFi/Percussion/Perc (10).wav');
 
-  hhc1=
-  hhc2=
-  hhc3=
-  hhc4=
-  hhc5=
-  hhc6=
+  kick1=loadSound('assets/sounds/LoFi/Kicks/Kick (1).wav');
+  kick2=loadSound('assets/sounds/LoFi/Kicks/Kick (2).wav');
+  kick3=loadSound('assets/sounds/LoFi/Kicks/Kick (3).wav');
+  kick4=loadSound('assets/sounds/LoFi/Kicks/Kick (4).wav');
+  kick5=loadSound('assets/sounds/LoFi/Kicks/Kick (5).wav');
+  kick6=loadSound('assets/sounds/LoFi/Kicks/Kick (6).wav');
+  kick7=loadSound('assets/sounds/LoFi/Kicks/Kick (7).wav');
 
-  hho1=
-  hho2=
-  hho3=
-  hho4=
-  hho5=
+  hhc1=loadSound('assets/sounds/LoFi/Hihats - Closed/HHC (1).wav');
+  hhc2=loadSound('assets/sounds/LoFi/Hihats - Closed/HHC (2).wav');
+  hhc3=loadSound('assets/sounds/LoFi/Hihats - Closed/HHC (3).wav');
+  hhc4=loadSound('assets/sounds/LoFi/Hihats - Closed/HHC (4).wav');
+  hhc5=loadSound('assets/sounds/LoFi/Hihats - Closed/HHC (5).wav');
+  hhc6=loadSound('assets/sounds/LoFi/Hihats - Closed/HHC (6).wav');
 
-  clap1=
-  clap2=
-  clap3=
-  clap4=
-  clap5=
-  clap6=
-  clap7=
-  clap8=
+  hho1=loadSound('assets/sounds/LoFi/Hihats - Open/HHO (1).wav');
+  hho2=loadSound('assets/sounds/LoFi/Hihats - Open/HHO (2).wav');
+  hho3=loadSound('assets/sounds/LoFi/Hihats - Open/HHO (3).wav');
+  hho4=loadSound('assets/sounds/LoFi/Hihats - Open/HHO (4).wav');
+  hho5=loadSound('assets/sounds/LoFi/Hihats - Open/HHO (5).wav');
 
-  */
+  clap1=loadSound('assets/sounds/LoFi/Claps/Clap (1).wav');
+  clap2=loadSound('assets/sounds/LoFi/Claps/Clap (2).wav');
+  clap3=loadSound('assets/sounds/LoFi/Claps/Clap (3).wav');
+  clap4=loadSound('assets/sounds/LoFi/Claps/Clap (4).wav');
+  clap5=loadSound('assets/sounds/LoFi/Claps/Clap (5).wav');
+  clap6=loadSound('assets/sounds/LoFi/Claps/Clap (6).wav');
+  clap7=loadSound('assets/sounds/LoFi/Claps/Clap (7).wav');
+  clap8=loadSound('assets/sounds/LoFi/Claps/Clap (8).wav');
+
 }
 
 function setup() {
@@ -148,6 +148,7 @@ function setup() {
   ellipseMode(CENTER);
   imageMode(CENTER);
   noStroke();
+  frameRate(FR);
 
   playButton = createImg('assets/images/play.png');
   pauseButton = createImg('assets/images/pause.png');
@@ -275,7 +276,6 @@ function setup() {
 
 function draw() {
 
-  //console.log("Target: ",target," Selection: ",selection," Selecting SFX:",selectingSFX, "Selecting option:",selectingOption, "Option: ",option);
   if (playing) { // Playing or Paused
     play();
   } else {
@@ -284,48 +284,10 @@ function draw() {
 
 }
 
-function clapsSelected(){
-  selection = 0;
-  selectingOption=true;
-}
-function hhcSelected(){
-  selection = 1;
-  selectingOption=true;
-}
-function hhoSelected(){
-  selection = 2;
-  selectingOption=true;
-}
-function kicksSelected(){
-  selection = 3;
-  selectingOption=true;
-}
-function percsSelected(){
-  selection = 4;
-  selectingOption=true;
-}
-function shakersSelected(){
-  selection = 5;
-  selectingOption=true;
-}
-function snapsSelected(){
-  selection = 6;
-  selectingOption=true;
-}
-function snaresSelected(){
-  selection = 7;
-  selectingOption=true;
-}
-function rimshotsSelected(){
-  selection = 8;
-  selectingOption=true;
-}
-
-
 function play() { // Steps for sim if not paused.
   drawUI(); // Draw UI.
   drawNotes(); // Draw all notes.
-  upadatePlayhead(); // Update position of playhead.
+  updatePlayhead(); // Update position of playhead.
   drawPlayhead(); // Print playhead at current position
   playSound(); // Check for collision, play sounds.
 }
@@ -333,7 +295,7 @@ function play() { // Steps for sim if not paused.
 function pause() { // Steps for sim if paused.
   drawUI(); // Draw UI.
   drawNotes();
-  upadatePlayhead(); // Update position of playhead.
+  updatePlayhead(); // Update position of playhead.
   drawPlayhead(); // Draw playhead.
 
 }
@@ -345,10 +307,12 @@ function selectSFX(){ // Opens menus to select SFX.
 
 function bpmUp(){
   bpm++;
+  bpm=constrain(bpm,60,160);
 }
 
 function bpmDown(){
   bpm--;
+  bpm=constrain(bpm,60,160);
 }
 
 function drawNotes() { // Draws the contents of notes[]
@@ -462,7 +426,7 @@ function drawUI() { // Draws the UI.
     snapsButton.show();
     rimshotsButton.show();
 
-    if(selection>0){
+    if(selection>=0){
       drawSelection();
     }
 
@@ -484,44 +448,190 @@ function drawUI() { // Draws the UI.
 
 function drawSelection(){ // Draws the content of the SFX selection folder.
 
+  let r=0;
+  let c=0;
+
   switch(selection){
-    case 0:
+    case 0: // Claps
       text("Category - Claps",0.75*width,0.175*height);
-      let claps =[];
+      let claps =[clap1,clap2,clap3,clap4,clap5,clap6,clap7,clap8];
+
+      for(let i=0;i<claps.length;i++){
+        push();
+        noStroke();
+        fill(255, 228, 169);
+        ellipse(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height) ,0.08*width,0.08*width);
+        fill(255, 202, 69);
+        text(i+1,width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height));
+        if(c== 0){
+          c=1;
+        }
+        else {
+          c=0;
+          r++;
+        }
+        pop();
+      }
       break;
-    case 1:
+
+    case 1: // HHO
       text("Category - HH Open",0.75*width,0.175*height);
-      let hihatopen =[];
+      let hihatopen =[hho1,hho2,hho3,hho4,hho5];
+
+      for(let i=0;i<hihatopen.length;i++){
+        push();
+        noStroke();
+        fill(255, 228, 169);
+        ellipse(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height) ,0.08*width,0.08*width);
+        fill(255, 202, 69);
+        text(i+1,width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height));
+        if(c== 0){
+          c=1;
+        }
+        else {
+          c=0;
+          r++;
+        }
+        pop();
+      }
       break;
-    case 2:
-      let hihatclosed =[];
+
+    case 2: // HHC
       text("Category - HH Closed",0.75*width,0.175*height);
+      let hihatclosed =[hhc1,hhc2,hhc3,hhc4,hhc5,hhc6];
+
+      for(let i=0;i<hihatclosed.length;i++){
+        push();
+        noStroke();
+        fill(255, 228, 169);
+        ellipse(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height) ,0.08*width,0.08*width);
+        fill(255, 202, 69);
+        text(i+1,width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height));
+        if(c== 0){
+          c=1;
+        }
+        else {
+          c=0;
+          r++;
+        }
+        pop();
+      }
       break;
-    case 3:
+
+    case 3: // Kicks
       text("Category - Kicks",0.75*width,0.175*height);
-      let kicks =[];
+      let kicks =[kick1,kick2,kick3,kick4,kick5,kick6,kick7];
+
+      for(let i=0;i<kicks.length;i++){
+        push();
+        noStroke();
+        fill(255, 228, 169);
+        ellipse(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height) ,0.08*width,0.08*width);
+        fill(255, 202, 69);
+        text(i+1,width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height));
+        if(c== 0){
+          c=1;
+        }
+        else {
+          c=0;
+          r++;
+        }
+        pop();
+      }
       break;
-    case 4:
+
+    case 4: // Percussion
       text("Category - Percussion",0.75*width,0.175*height);
-      let perc =[];
+      let perc =[perc1,perc2,perc3,perc4,perc5,perc6,perc7,perc8,perc9,perc10];
+
+      for(let i=0;i<perc.length;i++){
+        push();
+        noStroke();
+        fill(255, 228, 169);
+        ellipse(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height) ,0.08*width,0.08*width);
+        fill(255, 202, 69);
+        text(i+1,width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height));
+        if(c== 0){
+          c=1;
+        }
+        else {
+          c=0;
+          r++;
+        }
+        pop();
+      }
       break;
-    case 5:
+
+    case 5: // Shakers
       text("Category - Shakers",0.75*width,0.175*height);
-      let shakers =[];
+      let shakers =[shaker1,shaker2,shaker3,shaker4,shaker5,shaker6];
+
+      for(let i=0;i<shakers.length;i++){
+        push();
+        noStroke();
+        fill(255, 228, 169);
+        ellipse(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height) ,0.08*width,0.08*width);
+        fill(255, 202, 69);
+        text(i+1,width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height));
+        if(c== 0){
+          c=1;
+        }
+        else {
+          c=0;
+          r++;
+        }
+        pop();
+      }
       break;
-    case 6:
+
+    case 6: // Snaps
       text("Category - Snaps",0.75*width,0.175*height);
-      let snaps =[];
+      let snaps =[snap1,snap2,snap3,snap4,snap5,snap6];
+
+      for(let i=0;i<snaps.length;i++){
+        push();
+        noStroke();
+        fill(255, 228, 169);
+        ellipse(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height) ,0.08*width,0.08*width);
+        fill(255, 202, 69);
+        text(i+1,width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height));
+        if(c== 0){
+          c=1;
+        }
+        else {
+          c=0;
+          r++;
+        }
+        pop();
+      }
       break;
-    case 7:
+
+    case 7: // Snares
       text("Category - Snares",0.75*width,0.175*height);
-      let snares =[];
+      let snares =[snare1,snare2,snare3,snare4,snare5,snare6,snare7,snare8,snare9,snare10];
+
+      for(let i=0;i<snares.length;i++){
+        push();
+        noStroke();
+        fill(255, 228, 169);
+        ellipse(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height) ,0.08*width,0.08*width);
+        fill(255, 202, 69);
+        text(i+1,width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height));
+        if(c== 0){
+          c=1;
+        }
+        else {
+          c=0;
+          r++;
+        }
+        pop();
+      }
       break;
+
     case 8: // Rimshots
       text("Category - Rimshots",0.75*width,0.175*height);
       let rimshots=[rimshot1,rimshot2,rimshot3,rimshot4];
-      let r=0;
-      let c=0;
+
       for(let i=0;i<rimshots.length;i++){
         push();
         noStroke();
@@ -550,7 +660,7 @@ function assignSFX(){ // Tries to assign new SFX based on mouse position.
 
   switch(selection){
     case 0: // Claps
-      let claps =[];
+      let claps =[clap1,clap2,clap3,clap4,clap5,clap6,clap7,clap8];
       for(let i=0;i<claps.length;i++){
         d=dist(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height), mouseX,mouseY);
         if(d<=(0.08*width)/2){
@@ -570,9 +680,10 @@ function assignSFX(){ // Tries to assign new SFX based on mouse position.
         }
       }
       break;
+
     case 1: // Hi Hat Open
 
-      let hihatopen =[];
+      let hihatopen =[hho1,hho2,hho3,hho4,hho5];
       for(let i=0;i<hihatopen.length;i++){
         d=dist(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height), mouseX,mouseY);
         if(d<=(0.08*width)/2){
@@ -592,8 +703,9 @@ function assignSFX(){ // Tries to assign new SFX based on mouse position.
         }
       }
       break;
+
     case 2: // Hi Hat Closed
-      let hihatclosed =[];
+      let hihatclosed =[hhc1,hhc2,hhc3,hhc4,hhc5,hhc6];
       for(let i=0;i<hihatclosed.length;i++){
         d=dist(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height), mouseX,mouseY);
         if(d<=(0.08*width)/2){
@@ -614,9 +726,10 @@ function assignSFX(){ // Tries to assign new SFX based on mouse position.
       }
 
       break;
+
     case 3: // Kicks
 
-      let kicks =[];
+      let kicks =[kick1,kick2,kick3,kick4,kick5,kick6,kick7];
       for(let i=0;i<kicks.length;i++){
         d=dist(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height), mouseX,mouseY);
         if(d<=(0.08*width)/2){
@@ -636,9 +749,10 @@ function assignSFX(){ // Tries to assign new SFX based on mouse position.
         }
       }
       break;
+
     case 4: // Percussion
 
-      let perc =[];
+      let perc =[perc1,perc2,perc3,perc4,perc5,perc6,perc7,perc8,perc9,perc10];
       for(let i=0;i<perc.length;i++){
         d=dist(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height), mouseX,mouseY);
         if(d<=(0.08*width)/2){
@@ -658,6 +772,7 @@ function assignSFX(){ // Tries to assign new SFX based on mouse position.
         }
       }
       break;
+
     case 5: // Shakers
 
       let shakers =[shaker1,shaker2,shaker3,shaker4,shaker5,shaker6];
@@ -680,6 +795,7 @@ function assignSFX(){ // Tries to assign new SFX based on mouse position.
         }
       }
       break;
+
     case 6: // Snaps
 
       let snaps =[snap1,snap2,snap3,snap4,snap5,snap6];
@@ -702,6 +818,7 @@ function assignSFX(){ // Tries to assign new SFX based on mouse position.
         }
       }
       break;
+
     case 7: // Snares
 
       let snares =[snare1,snare2,snare3,snare4,snare5,snare6,snare7,snare8,snare9,snare10];
@@ -725,6 +842,7 @@ function assignSFX(){ // Tries to assign new SFX based on mouse position.
       }
 
       break;
+
     case 8: // Rimshots
       let rimshots=[rimshot1,rimshot2,rimshot3,rimshot4];
 
@@ -803,15 +921,21 @@ function setnoloop() { // Sets the looping variable to false.
 
 }
 
-function upadatePlayhead() { // Updates playhead position.
+function updatePlayhead() { // Updates playhead position.
 
   if (playhead.isBeingMoved) {
     dragPlayhead();
   }
   else if (playing) {
-    playhead.x += tempo();
+
+    let pxPerRefresh = (width/16)*(bpm)*(1/(60*frameRate())) ;
+
+    playhead.x += pxPerRefresh;
+
+    console.log(playhead.x,pxPerRefresh , millis());
+
     if (playhead.x >= width) {
-      playhead.x = 0;
+      playhead.x=0;
       for (let i = 0; i < notes.length; i++) {
         notes[i].played = false;
       }
@@ -822,14 +946,6 @@ function upadatePlayhead() { // Updates playhead position.
       }
     }
   }
-}
-
-function tempo() { // Dictates the increment of the playhead.
-
-  let executions = ((60000 / bpm) * 16) / 16.66667;
-  let speed = width / executions;
-  return speed;
-
 }
 
 function dragPlayhead() { // Handles user dragging playhead.
@@ -850,26 +966,12 @@ function drawPlayhead() { // Draws the playhead to the screen.
 }
 
 function playSound() {
-  playCh(1);
-  }
-
-function playCh(k) {
-  if (!chMuted(k)) {
-    for (let i = 0; i < notes.length; i++) {
-      let d = dist(playhead.x, notes[i].y, notes[i].x, notes[i].y);
-      if (d < notes[i].size && !(notes[i].played)) {
-        notes[i].sfx.play();
-        notes[i].played = true;
-      }
+  for (let i = 0; i < notes.length; i++) {
+    let d = dist(playhead.x, notes[i].y, notes[i].x, notes[i].y);
+    if (d < notes[i].size*0.05  && !(notes[i].played)) {
+      notes[i].sfx.play();
+      notes[i].played = true;
     }
-  }
-}
-
-function chMuted(k) { // Checks if channel k is muted.
-  if (channels[k + 1] <= 0) {
-    return true;
-  } else {
-    return false;
   }
 }
 
@@ -966,6 +1068,7 @@ function keyPressed(){ // Handles keyboard inputs.
         playing = false;
         playhead.x = playhead.last;
       } else {
+        console.log(millis());
         console.log("Resumed.");
         playing = true;
         for (let i = 0; i < notes.length; i++) {
@@ -984,12 +1087,54 @@ function keyPressed(){ // Handles keyboard inputs.
       }
       break;
 
-    case 8: // Backspace  - Delete Note
+    case 8: // Backspace  - Delete target Note.
       console.log("Deleting target: ",target, "Source: backspace");
       if(target>=0){
         deleteTargetNote();
       }
       target=-1;
+      break;
 
+    case 67: // C - Copy target Note.
+    if(target>=0){
+      spawnCopyNote();
+    }
   }
+}
+
+function clapsSelected(){
+  selection = 0;
+  selectingOption=true;
+}
+function hhcSelected(){
+  selection = 1;
+  selectingOption=true;
+}
+function hhoSelected(){
+  selection = 2;
+  selectingOption=true;
+}
+function kicksSelected(){
+  selection = 3;
+  selectingOption=true;
+}
+function percsSelected(){
+  selection = 4;
+  selectingOption=true;
+}
+function shakersSelected(){
+  selection = 5;
+  selectingOption=true;
+}
+function snapsSelected(){
+  selection = 6;
+  selectingOption=true;
+}
+function snaresSelected(){
+  selection = 7;
+  selectingOption=true;
+}
+function rimshotsSelected(){
+  selection = 8;
+  selectingOption=true;
 }
