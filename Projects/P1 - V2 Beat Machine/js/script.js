@@ -321,7 +321,7 @@ function setup() {
 
 function draw() {
   if(title){
-    image(titleImg,0.5*width,0.6*height,0.8*width,0.8*height);
+    image(titleImg,0.5*width,0.6*height,0.8*width,1*height);
   }
   else{
     //console.log("Targets:",targets,"Selection:",selection,"boxingOff:",boxingOff,"Option:",option,"selectingSFX:",selectingSFX,"selectingOption",selectingOption,"# of Notes:",notes.length);
@@ -568,7 +568,7 @@ function drawUI() { // Draws the UI.
 
   fill(255, 202, 69); // BPM Number
   textAlign(CENTER,CENTER);
-  textSize(width*0.0225);
+  textSize(height*0.04);
   textFont(rockin_record);
   text(bpm,(0.1 * width) + (8 * (0.0935 * height)),0.053*height);
 
@@ -610,7 +610,7 @@ function drawOptions(){ // Draws the content of the SFX selection folder.
         push();
         noStroke();
         fill(255, 228, 169);
-        ellipse(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height) ,0.08*width,0.08*width);
+        ellipse(width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height) ,0.1*height,0.1*height);
         fill(255, 202, 69);
         text(i+1,width*0.65 +(0.2*width*c) ,height*0.275 + (r*0.125*height));
         if(c== 0){
@@ -818,7 +818,7 @@ function assignSFX(){ // Tries to assign new SFX based on mouse position.
           option=i;
           claps[option].play();
           for(let j=0;j<targets.length;j++){
-            notes[j].sfx = claps[option];
+            notes[targets[j]].sfx = claps[option];
           }
           break;
         }
@@ -843,7 +843,7 @@ function assignSFX(){ // Tries to assign new SFX based on mouse position.
           option=i;
           hihatopen[option].play();
           for(let j=0;j<targets.length;j++){
-            notes[j].sfx = hihatopen[option];
+            notes[targets[j]].sfx = hihatopen[option];
           }
           break;
         }
@@ -867,7 +867,7 @@ function assignSFX(){ // Tries to assign new SFX based on mouse position.
           option=i;
           hihatclosed[option].play();
           for(let j=0;j<targets.length;j++){
-            notes[j].sfx = hihatclosed[option];
+            notes[targets[j]].sfx = hihatclosed[option];
           }
           break;
         }
@@ -893,7 +893,7 @@ function assignSFX(){ // Tries to assign new SFX based on mouse position.
           option=i;
           kicks[option].play();
           for(let j=0;j<targets.length;j++){
-            notes[j].sfx = kicks[option];
+            notes[targets[j]].sfx = kicks[option];
           }
           break;
         }
@@ -918,7 +918,7 @@ function assignSFX(){ // Tries to assign new SFX based on mouse position.
           option=i;
           perc[option].play();
           for(let j=0;j<targets.length;j++){
-            notes[j].sfx = perc[option];
+            notes[targets[j]].sfx = perc[option];
           }
           break;
         }
@@ -943,7 +943,7 @@ function assignSFX(){ // Tries to assign new SFX based on mouse position.
           option=i;
           shakers[option].play();
           for(let j=0;j<targets.length;j++){
-            notes[j].sfx = shakers[option];
+            notes[targets[j]].sfx = shakers[option];
           }
           break;
         }
@@ -968,7 +968,7 @@ function assignSFX(){ // Tries to assign new SFX based on mouse position.
           option=i;
           snaps[option].play();
           for(let j=0;j<targets.length;j++){
-            notes[j].sfx = snaps[option];
+            notes[targets[j]].sfx = snaps[option];
           }
           break;
         }
@@ -993,7 +993,7 @@ function assignSFX(){ // Tries to assign new SFX based on mouse position.
           option=i;
           snares[option].play();
           for(let j=0;j<targets.length;j++){
-            notes[j].sfx = snares[option];
+            notes[targets[j]].sfx = snares[option];
           }
           break;
         }
@@ -1019,7 +1019,7 @@ function assignSFX(){ // Tries to assign new SFX based on mouse position.
           option=i;
           rimshots[option].play();
           for(let j=0;j<targets.length;j++){
-            notes[j].sfx = rimshots[option];
+            notes[targets[j]].sfx = rimshots[option];
           }
           break;
         }
