@@ -46,6 +46,8 @@ let notes = [];
 let bpm = 120 ;
 let metronome = false;
 
+// Buttons!
+
 let playButton, pauseButton, loopButton, noloopButton, metronomeButton, tempodownButton, tempoupButton, tempoImg, newnoteButton;
 let deleteNoteButton,spawnCopyNoteButton,selectSFXButton,okButton;
 let clapsButton,hhcButton,hhoButton,kicksButton,percsButton,shakersButton,snaresButton,snapsButton,rimshotsButton;
@@ -54,6 +56,8 @@ let rockin_record;
 let targets=[]; // Int - The index of the note last selected, click sets it to zero.
 let selection=-1; // Int - The index of the last file explored.
 let option=-1; // Int - the index of the SFX option from selection.
+
+// Sounds!
 
 let click;
 let titleImg;
@@ -330,7 +334,8 @@ function draw() {
 
 
 }
-function startTheMachine(){
+
+function startTheMachine(){ // Starts the machine!
   title=false;
   playButton.show();
   pauseButton.show();
