@@ -563,9 +563,9 @@ function drawUI() { // Draws the UI.
 
   fill(255, 202, 69); // BPM Number
   textAlign(CENTER,CENTER);
-  textSize(50);
+  textSize(width*0.0225);
   textFont(rockin_record);
-  text(bpm,(0.1 * width) + (8 * (0.0935 * height)),0.052*height);
+  text(bpm,(0.1 * width) + (8 * (0.0935 * height)),0.053*height);
 
   pop();
 
