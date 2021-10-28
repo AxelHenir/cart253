@@ -2,7 +2,7 @@ class Gold{
 
   constructor(){
     this.x=random(50,width-50);
-    this.y=random(0.5*width,0.9*width);
+    this.y=random(0.4*width,0.7*width);
     this.size=50;
     this.phase=0;
     this.collected=false;

@@ -14,9 +14,7 @@ let juggles=0;
 
 function setup() {
   createCanvas(windowHeight,windowHeight);
-
   paddle = new Paddle(280,25);
-
 }
 
 function draw() {
@@ -156,7 +154,7 @@ function won(){ // User collected 10 gold and has won.
   pop();
 }
 
-function rebootSim(){
+function rebootSim(){ // Reboots the sim.
 
   points = 0;
   balls = [];
@@ -174,7 +172,7 @@ function rebootSim(){
 
 }
 
-function mousePressed(){ // Spawn new ball.
+function mousePressed(){ // Handles mouse click for various states
   let ball,gold;
   console.log("You tried");
   switch(state){
