@@ -39,7 +39,9 @@ class Ball {
       let dx = this.x - paddle.x; // Bounce
       this.vx = this.vx + map(dx,-paddle.width/2,paddle.width/2,-2.3,2.3);
 
-      this.vy = -this.vy;
+      if(this.vy>0){
+        this.vy = -this.vy;
+      }
       this.ay = 0;
 
       return true;
