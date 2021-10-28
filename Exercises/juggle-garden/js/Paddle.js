@@ -20,4 +20,8 @@ class Paddle {
     pop();
   }
 
+  checkBounds(){
+    this.x=constrain(this.x,this.width/2,width-this.width/2);
+  }
+
 }

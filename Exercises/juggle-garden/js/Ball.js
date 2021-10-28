@@ -8,7 +8,7 @@ class Ball {
     this.ax = 0;
     this.ay = 0;
     this.maxSpeed = 10;
-    this.size = 40;
+    this.size = 50;
     this.active = true;
   }
 
@@ -32,17 +32,27 @@ class Ball {
   }
 
   bounce(paddle) {
-    if (this.x > paddle.x - paddle.width/2 &&
-        this.x < paddle.x + paddle.width/2 &&
-        this.y + this.size/2 > paddle.y - paddle.height/2 &&
-        this.y - this.size/2 < paddle.y + paddle.height/2) {
+    if (this.x > paddle.x - paddle.width/2 - 0.8*this.size/2 && // Ball's x is within the X bounds of the paddle
+        this.x < paddle.x + paddle.width/2 + 0.8*this.size/2 &&
+        this.y > height-2*paddle.height) {
 
-      // Bounce
-      let dx = this.x - paddle.x;
-      this.vx = this.vx + map(dx,-paddle.width/2,paddle.width/2,-2,2);
+      let dx = this.x - paddle.x; // Bounce
+      this.vx = this.vx + map(dx,-paddle.width/2,paddle.width/2,-2.3,2.3);
 
       this.vy = -this.vy;
       this.ay = 0;
+
+      return true;
+    }
+    else if(this.x>=width-this.size/2){ // Bounce off right wall,
+      if(this.vx>=0){
+        this.vx *= -1;
+      }
+    }
+    else if(this.x<this.size/2){ // Bounce off left wall,
+      if(this.vx<=0){
+        this.vx *= -1;
+      }
     }
   }
 
