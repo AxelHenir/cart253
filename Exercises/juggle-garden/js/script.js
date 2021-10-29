@@ -1,34 +1,34 @@
 "use strict";
 
-let gravityForce = 0.002;
+let gravityForce = 0.002; // This governs the strength of gravity.
 let state = "title"; // title, sim, won, lost.
-let points = 0;
-let scoreStarter;
+let points = 0; // Number of gold coins collected. Collect 10 to win.
+let scoreStarter; // Tracks the millisecond the game begins.
 
-let paddle;
-let score;
-let balls = [];
-let golds =[];
-let numBalls = 5;
-let juggles=0;
+let paddle; // The paddle
+let score; // The score, the amount of time it takes to collect 10 gold.
+let balls = []; // Array which holds balls.
+let golds =[]; // Array which holds gold.
+let numBalls = 5; // Max number of balls we can have.
+let juggles=0; // Tracks te amount of juggles in the game.
 
 function setup() {
   createCanvas(windowHeight,windowHeight);
   paddle = new Paddle(280,25);
 }
 
-function draw() {
+function draw() { // Check the state of the game and call its associated function.
   switch(state){
-    case "title":
+    case "title": // Title screen
       title();
       break;
-    case "sim":
+    case "sim": // In the game
       sim();
       break;
-    case "won":
+    case "won": // Game is won
       won();
       break;
-    case "lost":
+    case "lost": // Game is lost
       lost();
       break;
   }
@@ -36,7 +36,7 @@ function draw() {
 
 function title(){ // Title Screen
   background (255);
-  push(); // Display the score.
+  push(); // Display controls and explanation
   fill(0);
   textSize(30);
   textAlign(CENTER,CENTER);
@@ -58,7 +58,7 @@ function sim(){ // Steps for sim
   }
 
   paddle.move(); // Move the paddle in memory.
-  paddle.checkBounds();
+  paddle.checkBounds(); // Adjust paddle to be within walls.
 
   for (let i = 0; i < balls.length; i++) { // For each ball,
     let ball = balls[i];
@@ -67,7 +67,7 @@ function sim(){ // Steps for sim
       ball.move(); // Move the balls in memory.
       if(ball.bounce(paddle)){ // Check if we bounced a ball.
         //console.log("Juggled! ",juggles);
-        for(let j=0;j<golds.length;j++){
+        for(let j=0;j<golds.length;j++){ // If we bounced a ball, make the gold spawn in.
           let gold = golds[j];
           gold.phaseUp();
           }
@@ -85,13 +85,13 @@ function sim(){ // Steps for sim
   paddle.display(); // Display the paddle.
 
 if(points>=10){ // Check if user has won.
-  score = ((millis()-scoreStarter)/1000).toFixed(2);
+  score = ((millis()-scoreStarter)/1000).toFixed(2); // Score is the amount of time elapsed, rounded to 2 decimals.
   state = "won";
 }
 else { // Check if the user has lost.
   let allDropped=true;
   for(let i =0;i<balls.length; i++){
-    if(balls[i].active){
+    if(balls[i].active){ // Checks if there's at least 1 active ball, that is, that not all balls have been dropped.
       allDropped=false;
       break;
     }
@@ -182,7 +182,7 @@ function mousePressed(){ // Handles mouse click for various states
       rebootSim();
       break;
 
-    case "sim": // Click while in sim = spawn new ball
+    case "sim": // Click while in sim = spawn new ball if able
       if(numBalls>=1){
         ball = new Ball(width*0.5,height*0.5);
         balls.push(ball);
