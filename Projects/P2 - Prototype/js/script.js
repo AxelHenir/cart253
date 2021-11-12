@@ -2,7 +2,12 @@
 
 "use strict";
 let jitterAmount = 0; // Tracks jitter amount. Add to this to make the cells more jittery. 0 = no jitter.
-let siteCoords = []; // Stores the coordinates of the sites.
+let cells = []; // Stores the cell objects.
+let cellAmount = 150; // Amount of cells to generate in the program.
+let spawnerInterval = setInterval(spawnSite,250); // The interval which spawns the initial sites.
+let siteStrokeOn=true; // Tracks if the cells sites get drawn
+let cellStrokeOn = true; // Tracks if the cells' borders get drawn
+
 
 function preload() {
 
@@ -12,77 +17,74 @@ function setup() {
 
   createCanvas(1000, 1000);
 
-  // Generate initial sites and store the coordinate pairs.
-  for(let i=0; i<75; i++){
-
-    let x=random(0,1000);
-    let y=random(0,1000);
-
-    siteCoords.push([x,y]);
-  }
-
-  // Make the voronoi diagram (With sites from siteCoords[])
-  for(let i=0; i<siteCoords.length; i++){
-    voronoiSite(siteCoords[i][0],siteCoords[i][1], random(25,255));
+  // Update the voronoi diagram (With sites from cells[])
+  for(let i=0; i<cells.length; i++){
+    voronoiSite(cells[i].getX(),cells[i].getY(), cells[i].getFill());
   }
 
   // Calculate the diagram
   voronoi(1000,1000,true);
 
-  // Get the diagrams info
-  let diagram = voronoiGetCells();
-	console.log(diagram);
-
+  // Set jitter parameters.
   voronoiJitterStepMin(30);
   voronoiJitterStepMax(100);
 
 }
 
-function draw() {
+function draw(){
 
-  //  Background
+  // Background
   background(150);
+
+  // Redraw the diagram
+  redrawVoronoiDiagram();
+}
+
+function spawnSite(){ // Function responsible for spawning sites
+
+  if(cellAmount>0){
+    cells.push(new Cell(500,500,random([true,false])));
+    cellAmount--;
+  }
+}
+
+function redrawVoronoiDiagram(){ // Function responsible for updating the diagram
 
   // Decrement jitter
   decrementJitter();
 
-  // Redraw graph
-  redrawSites();
+  // Update Cells: Voronoi.p5 doesnt allow the movement of cells once the graph is drawn.
+  // therefore, we must clear the diagram and redraw it with updated data to animate it.
+  updateCells();
 
-  // Displace Cells
-  displaceCells();
-
-  // Calculate the diagram
+  // "Calculate" the diagram, required by library.
   voronoi(1000,1000,true);
 
-  // Draw the diagram
+  // Draw the diagram (finally!)
   voronoiDraw(0,0,true,true);
 }
 
-function redrawSites(){
+function updateCells(){
 
-  // Clear previous diagram
+  // Clear previous diagram, we're gonna rebuild him, we have the technology.
   voronoiClearSites();
 
-  // Make the voronoi diagram (With sites from siteCoords[])
-  for(let i=0; i<siteCoords.length; i++){
-    voronoiSite(siteCoords[i][0],siteCoords[i][1], 150);
+  // Update the voronoi diagram (With cell objects stored in cells[])
+  for(let i=0; i<cells.length; i++){
+
+    // spinspin() "spins" the cells. It's how the cells move between iterations.
+    // In the future, this function can be something entirely different to create cool(er) patterns!
+    cells[i].spinspin();
+
+    // fadeCell() adjusts the cells shade as it moves.
+    cells[i].fadeCell();
+
+    // The library's function to add a site to the diagram. My cell class tracks the charcateristics of each cell.
+    voronoiSite(cells[i].getX(),cells[i].getY(), cells[i].getFill());
   }
 }
 
-function displaceCells(){
-  for(let i=0;i<siteCoords.length;i++){
-    siteCoords[i]=[siteCoords[i][0]+random(0,10),siteCoords[i][1]+random(0,10)];
-    if(siteCoords[i][0] >= 1000){
-      siteCoords[i][0]=0;
-    }
-    if(siteCoords[i][1] >= 1000){
-      siteCoords[i][1]=0;
-    }
-  }
-}
-
-function decrementJitter(){   // Decrement jitter
+function decrementJitter(){   // Decrement jitter (Introduce jitter by clicking, it's subtle)
 
   if(jitterAmount>0){
     jitterAmount-=0.3; // Jitter amount decay, Low = slow.
@@ -93,31 +95,11 @@ function decrementJitter(){   // Decrement jitter
   voronoiJitterFactor(jitterAmount);
 }
 
-function newDiagram(){
-
-  // Clear previous diagram
-  voronoiClearSites();
-
-  // Clear Previous site coordinates
-  siteCoords=[];
-
-  // Generate & store the sites' coordinate pairs
-  for(let i=0; i<75; i++){
-
-    let x=random(0,1000);
-    let y=random(0,1000);
-
-    siteCoords.push([x,y]);
-  }
-
-  // Make the voronoi diagram (With sites from siteCoords[])
-  for(let i=0; i<siteCoords.length; i++){
-    voronoiSite(siteCoords[i][0],siteCoords[i][1], random(25,255));
-  }
-}
-
 function mousePressed(){ // Mouse Click = Introduce Jitter
+
+  // This is an arbitrary amount of jitter I find works best. Increase for more, decrease for less.
   jitterAmount=12;
+
 }
 
 function keyPressed(){ // Checks all keys pressed
@@ -132,9 +114,28 @@ function keyPressed(){ // Checks all keys pressed
       }
       break;
 
-    case 81: // Q = Brand new diagram
-      newDiagram();
+    case 81: // Q = Draw sites on/off
+      if(siteStrokeOn){
+        voronoiSiteStrokeWeight(0);
+        siteStrokeOn=false;
+      }
+      else{
+        voronoiSiteStrokeWeight(3);
+        siteStrokeOn=true;
+      }
       break;
+
+    case 87: // W = Draw cell stroke on/off
+      if(cellStrokeOn){
+        voronoiCellStrokeWeight(0);
+        cellStrokeOn=false;
+      }
+      else{
+        voronoiCellStrokeWeight(1);
+        cellStrokeOn=true;
+      }
+      break;
+
 
 
   }
