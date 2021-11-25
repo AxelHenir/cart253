@@ -3,13 +3,8 @@
 
 "use strict";
 
-let song1,song2,song3,song4,song5;
-let currentSongName="N/A";
-let amp,ftt;
-let music=undefined,musicL=undefined,musicR=undefined;
-
 let ampLevel;
-
+let music =undefined;
 let ampCircle ={
   x:0,
   y:0,
@@ -17,24 +12,14 @@ let ampCircle ={
 }
 
 function preload() {
-  song1=loadSound("assets/sounds/music/Cowboy Bebop - Rush.mp3");
-  song2=loadSound("assets/sounds/music/Glass Animals - Heatwaves.mp3");
-  song3=loadSound("assets/sounds/music/KAYTRANADA - Gray Area.mp3");
-  song4=loadSound("assets/sounds/music/Karma Fields - Dreams.mp3");
-  song5=loadSound("assets/sounds/music/Denzel Curry - Dynasties and Dystopia.mp3");
+
 }
 
 function setup(){
   // Canvas space for my mini visualizers
   createCanvas(1000,1000);
 
-  // Amplitude object from p5.sound
-  amp = new p5.Amplitude();
-  ampR = new p5.Amplitude();
-  ampL = new p5.Amplitude();
-  
-  // FTT object from p5.sound
-  ftt = new p5.FFT();
+  music = new Music(); // Music object contains audio-in for the demo
 
   rectMode(CENTER,CENTER);
   textAlign(CENTER,CENTER);
@@ -46,7 +31,7 @@ function draw() {
   noFill();
 
   // Display info about the current song
-  displayMusicInfo();
+  music.displayMusicInfo();
 
   // Updates the FFT visualizer
   handleFFT();
@@ -54,31 +39,9 @@ function draw() {
   // Amplitude Demo #1
   ampDemo1();
 
-  // Amplitude Demo #2
-  ampDemo2();
-
-
   // Draws the borders around the demo windows
   drawBorders();
 
-}
-
-function ampDemo2(){
-
-  // Check if we are actually playing music first,
-  if(music!=undefined){
-    push();
-    translate(400,200);
-    strokeWeight(3);
-    stroke(0);
-    fill(255);
-
-    let levelL = amp.
-    let levelR = amp.getLevel();
-    ampCircle.r = map(level,0,1,30,150);
-    ellipse(ampCircle.x,ampCircle.y,ampCircle.r,ampCircle.r);
-    pop();
-  }
 }
 
 function ampDemo1(){ // Amp demo 1 shows how the volume affects a circle's size.
@@ -90,19 +53,10 @@ function ampDemo1(){ // Amp demo 1 shows how the volume affects a circle's size.
     strokeWeight(3);
     stroke(0);
     fill(255);
-    let level = amp.getLevel();
+    let level = music.amp.getLevel();
     ampCircle.r = map(level,0,1,30,150);
     ellipse(ampCircle.x,ampCircle.y,ampCircle.r,ampCircle.r);
     pop();
-  }
-
-}
-
-function handleFFT(){
-
-  // Check if we are actually playing music first,
-  if(music!=undefined){
-
   }
 
 }
@@ -138,102 +92,33 @@ function keyPressed(){ // Handles all keyboard input. 1-5 to play songs. Space t
   switch(keyCode){
 
     case 49: // 1 = Play song 1
-      currentSongName = "SEATBELTS - Rush";
-      if(music==undefined){ // check if first
-        music = song1; // Set music to selected song
-        musicL = music;
-        musicR = music;
-        musicR.setBuffer([musicR.buffer.getChannelData(1)]);
-        musicL.setBuffer([musicL.buffer.getChannelData(0)]);
-        music.loop(); // Begin looping music
-      }
-      else{
-        music.stop(); // Stop old song
-        music = song1; // Set music to selected song
-        music.loop(); // Begin looping music
-      }
-
+      music.changeTracks(1);
       break;
 
 
     case 50: // 2 = Play song 2
-      currentSongName = "Glass Animals - Heat Waves";
-      if(music==undefined){ // check if first
-        music = song2; // Set music to selected song
-        music.loop(); // Begin looping music
-      }
-      else{
-        music.stop(); // Stop old song
-        music = song2; // Set music to selected song
-        music.loop(); // Begin looping music
-      }
+      music.changeTracks(2);
       break;
 
 
     case 51: // 3 = Play song 3
-      currentSongName = "KAYTRANADA - Gray Area (ft. Mick Jenkins)";
-      if(music==undefined){ // check if first
-        music = song3; // Set music to selected song
-        music.loop(); // Begin looping music
-      }
-      else{
-        music.stop(); // Stop old song
-        music = song3; // Set music to selected song
-        music.loop(); // Begin looping music
-      }
+      music.changeTracks(3);
       break;
 
 
     case 52: // 4 = Play song 4
-      currentSongName = "Karma Fields - Dreams (ft. Shey Baba)";
-      if(music==undefined){ // check if first
-        music = song4; // Set music to selected song
-        music.loop(); // Begin looping music
-      }
-      else{
-        music.stop(); // Stop old song
-        music = song4; // Set music to selected song
-        music.loop(); // Begin looping music
-      }
+      music.changeTracks(4);
       break;
 
+
     case 53: // 5 = Play song 5
-      currentSongName = "Denzel Curry - Dynasties and Dystopia";
-      if(music==undefined){ // check if first
-        music = song5; // Set music to selected song
-        music.loop(); // Begin looping music
-      }
-      else{
-        music.stop(); // Stop old song
-        music = song5; // Set music to selected song
-        music.loop(); // Begin looping music
-      }
+
       break;
 
 
     case 32: // Spacebar = Play/Pause
-      if(music!=undefined){
-        if(music.isPlaying()){
-          music.pause(); // Pause music
-        }
-        else{
-          music.loop(); // Resume music
-        }
-      }
+      music.pauseMusic();
       break;
 
-
   }
-}
-
-function displayMusicInfo(){ // Display the "now-playing"
-
-  push();
-  textAlign(LEFT);
-  textSize(24);
-  fill(0);
-  noStroke();
-  text("Now playing: "+currentSongName, 25,50);
-  pop();
-
 }

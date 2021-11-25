@@ -7,6 +7,7 @@ let cellAmount = 150; // Amount of cells to generate in the program.
 let spawnerInterval = setInterval(spawnSite,250); // The interval which spawns the initial sites.
 let siteStrokeOn=true; // Tracks if the cells sites get drawn
 let cellStrokeOn = true; // Tracks if the cells' borders get drawn
+let music =undefined; // music object
 
 
 function preload() {
@@ -16,6 +17,9 @@ function preload() {
 function setup() {
 
   createCanvas(1000, 1000);
+
+  // Music object contains audio-in for the demo
+  music = new Music();
 
   // Update the voronoi diagram (With sites from cells[])
   for(let i=0; i<cells.length; i++){
@@ -38,6 +42,10 @@ function draw(){
 
   // Redraw the diagram
   redrawVoronoiDiagram();
+
+  // Display info about the current song
+  music.displayMusicInfo();
+  
 }
 
 function spawnSite(){ // Function responsible for spawning sites
@@ -105,11 +113,37 @@ function mousePressed(){ // Mouse Click = Introduce Jitter
 function keyPressed(){ // Checks all keys pressed
   switch(keyCode){
 
+    case 49: // 1 = Play song 1
+      music.changeTracks(1);
+      break;
+
+
+    case 50: // 2 = Play song 2
+      music.changeTracks(2);
+      break;
+
+
+    case 51: // 3 = Play song 3
+      music.changeTracks(3);
+      break;
+
+
+    case 52: // 4 = Play song 4
+      music.changeTracks(4);
+      break;
+
+
+    case 53: // 5 = Play song 5
+      music.changeTracks(5);
+      break;
+
     case 32: // Spacebar = play / pause
       if(isLooping()){
+        music.pauseMusic();
         noLoop();
       }
       else{
+        music.pauseMusic();
         loop();
       }
       break;
