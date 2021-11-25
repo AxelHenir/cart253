@@ -3,16 +3,17 @@
 
 "use strict";
 
-let song1,song2,song3,song4;
+let song1,song2,song3,song4,song5;
 let currentSongName="N/A";
 let amp,ftt;
-let music=undefined;
+let music=undefined,musicL=undefined,musicR=undefined;
 
 let ampLevel;
 
 let ampCircle ={
   x:0,
   y:0,
+  r:15,
 }
 
 function preload() {
@@ -20,6 +21,7 @@ function preload() {
   song2=loadSound("assets/sounds/music/Glass Animals - Heatwaves.mp3");
   song3=loadSound("assets/sounds/music/KAYTRANADA - Gray Area.mp3");
   song4=loadSound("assets/sounds/music/Karma Fields - Dreams.mp3");
+  song5=loadSound("assets/sounds/music/Denzel Curry - Dynasties and Dystopia.mp3");
 }
 
 function setup(){
@@ -28,6 +30,9 @@ function setup(){
 
   // Amplitude object from p5.sound
   amp = new p5.Amplitude();
+  ampR = new p5.Amplitude();
+  ampL = new p5.Amplitude();
+  
   // FTT object from p5.sound
   ftt = new p5.FFT();
 
@@ -49,9 +54,31 @@ function draw() {
   // Amplitude Demo #1
   ampDemo1();
 
+  // Amplitude Demo #2
+  ampDemo2();
+
+
   // Draws the borders around the demo windows
   drawBorders();
 
+}
+
+function ampDemo2(){
+
+  // Check if we are actually playing music first,
+  if(music!=undefined){
+    push();
+    translate(400,200);
+    strokeWeight(3);
+    stroke(0);
+    fill(255);
+
+    let levelL = amp.
+    let levelR = amp.getLevel();
+    ampCircle.r = map(level,0,1,30,150);
+    ellipse(ampCircle.x,ampCircle.y,ampCircle.r,ampCircle.r);
+    pop();
+  }
 }
 
 function ampDemo1(){ // Amp demo 1 shows how the volume affects a circle's size.
@@ -64,8 +91,8 @@ function ampDemo1(){ // Amp demo 1 shows how the volume affects a circle's size.
     stroke(0);
     fill(255);
     let level = amp.getLevel();
-    let size = map(level,0,1,30,150);
-    ellipse(ampCircle.x,ampCircle.y,size,size);
+    ampCircle.r = map(level,0,1,30,150);
+    ellipse(ampCircle.x,ampCircle.y,ampCircle.r,ampCircle.r);
     pop();
   }
 
@@ -107,13 +134,17 @@ function drawBorders(){
   // Demo 2
 }
 
-function keyPressed(){ // Handles all keyboard input. 1-4 to play songs. Space to play/pause.
+function keyPressed(){ // Handles all keyboard input. 1-5 to play songs. Space to play/pause.
   switch(keyCode){
 
     case 49: // 1 = Play song 1
       currentSongName = "SEATBELTS - Rush";
       if(music==undefined){ // check if first
         music = song1; // Set music to selected song
+        musicL = music;
+        musicR = music;
+        musicR.setBuffer([musicR.buffer.getChannelData(1)]);
+        musicL.setBuffer([musicL.buffer.getChannelData(0)]);
         music.loop(); // Begin looping music
       }
       else{
@@ -162,6 +193,19 @@ function keyPressed(){ // Handles all keyboard input. 1-4 to play songs. Space t
       else{
         music.stop(); // Stop old song
         music = song4; // Set music to selected song
+        music.loop(); // Begin looping music
+      }
+      break;
+
+    case 53: // 5 = Play song 5
+      currentSongName = "Denzel Curry - Dynasties and Dystopia";
+      if(music==undefined){ // check if first
+        music = song5; // Set music to selected song
+        music.loop(); // Begin looping music
+      }
+      else{
+        music.stop(); // Stop old song
+        music = song5; // Set music to selected song
         music.loop(); // Begin looping music
       }
       break;
