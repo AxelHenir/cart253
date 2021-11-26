@@ -31,7 +31,7 @@ const VOR_CELLDRAW_SITE = 3;
 	var voronoiDiagram;
 
 	var sites = [];
-	var cells = [];
+	var cells = []; 
 
 	var notFirst = false;
 	var nRandoms;

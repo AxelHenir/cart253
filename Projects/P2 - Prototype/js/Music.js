@@ -18,8 +18,16 @@ class Music{ // Plug n Play Audio player
     // Amplitude object from p5.sound
     this.amp = new p5.Amplitude();
 
-    // FTT object from p5.sound
-    this.ftt = new p5.FFT();
+    // FFT object from p5.sound
+    this.fft = new p5.FFT(0.2,512);
+
+    // PeakDetect objects from p5.sound
+    this.pDBass = new p5.PeakDetect(0,200,0.875);
+    this.pDLowMid = new p5.PeakDetect(250,500,0.5);
+    this.pDMid = new p5.PeakDetect(550,2000,0.5);
+    this.pDHighMid = new p5.PeakDetect(2100,6000,0.7);
+    this.pDTreble = new p5.PeakDetect(6200,20000,0.5);
+
   }
 
   displayMusicInfo(){ // Display the "now-playing"
@@ -125,5 +133,83 @@ class Music{ // Plug n Play Audio player
     }
   }
 
+  getFreq(s){
+
+    // Analyze the fft, required by p5.sound
+    this.fft.analyze();
+
+    switch(s){
+      case "bass":
+
+        // Update the peakdetect for bass
+        this.pDBass.update(this.fft);
+
+        // If a peak is detected
+        if (this.pDBass.isDetected){
+          return(true); // true = do effect
+        }
+        else{
+          return(false); // false = do no effects
+        }
+        break;
+
+      case "lowMid":
+
+        // Update the peakdetect for bass
+        this.pDLowMid.update(this.fft);
+
+        // If a peak is detected
+        if (this.pDLowMid.isDetected){
+          return(true); // true = do effect
+        }
+        else{
+          return(false); // false = do no effects
+        }
+        break;
+
+      case "mid":
+
+        // Update the peakdetect for bass
+        this.pDMid.update(this.fft);
+
+        // If a peak is detected
+        if (this.pDMid.isDetected){
+          return(true); // true = do effect
+        }
+        else{
+          return(false); // false = do no effects
+        }
+        break;
+
+      case "highMid":
+
+        // Update the peakdetect for bass
+        this.pDHighMid.update(this.fft);
+
+        // If a peak is detected
+        if (this.pDHighMid.isDetected){
+          return(true); // true = do effect
+        }
+        else{
+          return(false); // false = do no effects
+        }
+        break;
+
+      case "treble":
+
+        // Update the peakdetect for bass
+        this.pDTreble.update(this.fft);
+
+        // If a peak is detected
+        if (this.pDTreble.isDetected){
+          return(true); // true = do effect
+        }
+        else{
+          return(false); // false = do no effects
+        }
+        break;
+
+    }
+  }
+
 }
- 

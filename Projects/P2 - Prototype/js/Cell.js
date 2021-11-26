@@ -1,13 +1,26 @@
 class Cell{
 
-  constructor(x,y,fade){
-    this.x = x;
-    this.y = y;
-    this.fill = random(100,150);
-    this.theta = random(0,180);
-    this.vtheta = 0.025;
-    this.radius = 0;
-    this.darken = fade;
+  constructor(x,y){
+
+    // Cartesion Tracking
+    this.x = x; // Position X
+    this.y = y; // Position Y
+    this.fill = random(50,200); // Color of cell
+
+    this.o_x = this.x; // Origin X
+    this.o_y = this.y; // Origin Y
+
+    // Polar Coordinate Tracking
+    this.theta = random(0,180); // Angle
+    this.vtheta = 0.025; // Angular velocity
+    this.radius = 0; // Radius
+
+    this.o_theta = this.theta // Angle origin
+    this.o_r = this.radius // Radius origin
+
+    this.o_fill = this.fill;
+
+    this.evolutionBehavior=2; // ID that decides evolution pattern
   }
 
   // Getters
@@ -32,43 +45,98 @@ class Cell{
     this.fill = fill;
   }
 
-  // Movement function
-  spinspin(){
 
-    // Update site position with trig (ooooh spooooooky trig!!!)
-    this.x = this.radius*cos(this.theta) +500;
-    this.y = this.radius*sin(this.theta) +500;
+  // Evolve the cell
+  evolve(){
 
-    // Adjust the roation speed to slow down as R increases.
+    // Each evolution behavior is given an ID.
+    switch (this.evolutionBehavior){
+
+      case 1:
+        this.orbit();
+        break;
+
+      case 2:
+        this.shootingStar();
+        break;
+
+      case 3:
+        this.blink();
+        break;
+
+    }
+
+  }
+
+  respawn(){
+    this.x = 500;
+    this.y = 500;
+    this.fill = this.fill; // Fill carries over
+    this.theta = random(0,180);
+    this.vtheta = 0.025;
+    this.radius = 0;
+
+    this.evolutionBehavior=random([1,2]); // Orbits
+  }
+
+  // Movement functions (Evolution behaviors) ==================================
+
+  // Spawn in center, expand outwards in orbital motion
+  orbit(){
+
+    if(this.radius >= 750){
+      this.respawn();
+    }
+
+    // Update site position using polar coords
+    this.x = this.radius*cos(this.theta) + 500; // Orbits x w/r/t origin x
+    this.y = this.radius*sin(this.theta) + 500; // Orbits y w/r/t origin y
+
+    // Adjust the roation speed to slow down as R increases
     this.vtheta=map(this.radius,0,600,0.025,0.005);
 
-    // Increment theta = (you spin me right round baby, right round..)
+    // Increment theta
     this.theta+=this.vtheta;
 
-    // Increment radius = (and I ran, I ran so far awaaaaay..)
-    this.radius+=0.25+random(0.05,0.25);
+    // Increment radius
+    this.radius+=0.25;
+
+  }
+
+  // Spawn in center, fly outwards quickly
+  shootingStar(){
 
     // Respawn site if leaving page
-    if(this.x>=1100 || this.x<= -1100 || this.y>=1100 || this.y<= -1100){
-      this.x = 500;
-      this.y= 500;
-      this.radius= 0;
-      this.theta= random(0,180);
-      this.vtheta=0.025;
-      this.fill=random(100,150);
+    if(this.radius >= 750){
+      this.respawn();
     }
+
+    // Update site position using polar coords
+    this.x = this.radius*cos(this.theta) +this.o_x; // Orbits x w/r/t origin x
+    this.y = this.radius*sin(this.theta) +this.o_y; // Orbits y w/r/t origin y
+
+    // Increment radius, speed based on distance from center.
+    this.radius+= map(this.radius,0,750,5,1);
+
   }
 
-  // Color adjustment
-  fadeCell(){
+  // Spawn in random spot on page
+  blink(){
 
-    // Each cell has a darken boolean, if it's true, the cell darkens over the course of its lifetime. If it's false, it becomes lighter.
-    if(this.darken){
-      this.fill+=0.1;
+    // Respawn site if leaving page
+    if(this.r >= 750){
+      this.respawn();
     }
-    else{
-      this.fill-=0.1;
+
+    // If a condition is met, the cell will teleport
+    if(true){
+      this.x = random(this.x-20,this.x+20);
+      this.y = random(this.y-20,this.y+20);
     }
+
   }
+
+
+
 
 }
