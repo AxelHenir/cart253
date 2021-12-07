@@ -66,10 +66,6 @@ function draw(){
 
 }
 
-function mousePressed(){ // Mouse Click = Introduce Jitter
-
-}
-
 function keyPressed(){ // Checks all keys pressed
   switch(keyCode){
 
@@ -123,8 +119,6 @@ function keyPressed(){ // Checks all keys pressed
     case 82: // R - Spawn new site
       diagram.spawnSite();
       break;
-
-
 
   }
 
