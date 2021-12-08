@@ -3,9 +3,9 @@ class VDiagram{
   constructor(){
 
     this.cellAmount = 150; // Total cells in simulation
-    this.jitterAmount = 0;
+    this.jitterAmount = 0; // Jitter in diagram
 
-    this.activeCells = []; // The collection of cells being displayed
+    this.activeCells = []; // The collection of cells actively being displayed
     this.enqueuedCells = []; // The collection of cells waiting to be displayed
     this.reserveCells = []; // The collection of cells ready to be displayed
 
@@ -42,7 +42,7 @@ class VDiagram{
     // draw the diagram
     voronoiDraw(0,0,true,true);
 
-    console.log("Reserve: ",this.reserveCells.length," Enqueued: ",this.enqueuedCells.length," Active: ",this.activeCells.length);
+    //console.log("Reserve: ",this.reserveCells.length," Enqueued: ",this.enqueuedCells.length," Active: ",this.activeCells.length);
 
   }
 
@@ -87,7 +87,7 @@ class VDiagram{
 
   }
 
-  cullActiveCells(){ // Naturally stops the BG.
+  cullActiveCells(){ // Naturally stops the BG. (Sets all cells not to repsawn)
 
     for(let i = 0; i<this.activeCells.length; i++){
       this.activeCells[i].respawn = false;
@@ -96,7 +96,20 @@ class VDiagram{
 
   }
 
-  respawnCell(cell){
+  cullEnqueuedCells(){ // Removes all cells from enqueuedCells and moves them to reserveCells
+
+    // Move each element in enqueuedCells to reserveCells
+    let len = this.enqueuedCells.length;
+    for(let i = 0 ; i<len ; i++){
+
+      // Moves the cell from enqueuedCells to reserveCells
+      this.reserveCells.push(this.enqueuedCells.pop());
+
+    }
+
+  }
+
+  respawnCell(cell){ // Takes Cell as input and calls associated spawning function for it.
     let b = cell.b;
     switch(b){
 
@@ -201,7 +214,7 @@ class VDiagram{
 
   // EFFECT QUEUES & SCENES ====================================================
 
-  queue_Explosion(n){
+  queue_Explosion(n){ // Passes n cells to FX_Explosion
     for (let i=0; i<n ; i++){
       if (this.reserveCells.length >= 1){
         this.FX_Explosion(this.reserveCells.pop());
@@ -209,7 +222,7 @@ class VDiagram{
     }
   }
 
-  queue_passBy(n){
+  queue_passBy(n){ // Passes n cells to BG_passBy
     for (let i=0; i<n ; i++){
       if (this.reserveCells.length >= 1){
         this.BG_passBy(this.reserveCells.pop());
@@ -217,7 +230,7 @@ class VDiagram{
     }
   }
 
-  queue_Orbit(n){
+  queue_Orbit(n){ // Passes n cells to BG_Orbit
     for (let i=0; i<n ; i++){
       if (this.reserveCells.length >= 1){
         this.BG_Orbit(this.reserveCells.pop());
@@ -225,7 +238,7 @@ class VDiagram{
     }
   }
 
-  queue_Spiral(n){
+  queue_Spiral(n){ // Passes n cells to BG_Spiral
     for (let i=0; i<n ; i++){
       if (this.reserveCells.length >= 1){
         this.BG_Spiral(this.reserveCells.pop());
@@ -233,7 +246,7 @@ class VDiagram{
     }
   }
 
-  queue_Vortex(n){
+  queue_Vortex(n){ // Passes n cells to BG_Vortex
     for (let i=0; i<n ; i++){
       if (this.reserveCells.length >= 1){
         this.BG_Vortex(this.reserveCells.pop());
@@ -243,16 +256,28 @@ class VDiagram{
 
   dequeueCell(){ // Pushes cells from enqueuedCells to activeCells
 
+    // Checks if there is an enqueued cell
     if(this.enqueuedCells.length>=1){
+
+      // Moves the cell from enqueuedCells to activeCells
       this.activeCells.push(this.enqueuedCells.pop());
+
     }
 
   }
 
-  changeScene(){
+  changeScene(){ // Changes the BG to a new scene
+
+    // De-activate the current cells
     this.cullActiveCells();
+
+    // Empty enqueued cells
+    this.cullEnqueuedCells();
+
+    // Randomly detemrine new BG
     let scene = random([0,1,2,3]);
     switch(scene){
+
       case 0:
         this.queue_passBy(25);
         break;

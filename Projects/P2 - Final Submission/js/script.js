@@ -41,25 +41,8 @@ function draw(){
     diagram.dequeueCell();
   }
 
-  // Read the music and adapt the cells
-  let f1,f2,f3,f4,f5 = undefined;
-
-  // Get bass frequencies
-  f1 = music.getFreq("bass");
-
-  // Get low-mid frequencies
-  f2 = music.getFreq("lowMid");
-
-  // Get mid frequencies
-  f3 = music.getFreq("mid");
-
-  // Get high-mid frequencies
-  f4 = music.getFreq("highMid");
-
-  // Get high frequencies
-  f5 = music.getFreq("treble");
-
-  //console.log("f1: ",f1,"f2: ",f2,"f3: ",f3,"f4: ",f4,"f5: ",f5);
+  // Get details from music, apply effects
+  music.callEffectsFromMusic();
 
   // Redraw the diagram
   diagram.redraw();

@@ -22,7 +22,7 @@ class Music{ // Plug n Play Audio player
     this.fft = new p5.FFT(0.2,512);
 
     // PeakDetect objects from p5.sound
-    this.pDBass = new p5.PeakDetect(0,200,0.875);
+    this.pDBass = new p5.PeakDetect(0,200,0.92);
     this.pDLowMid = new p5.PeakDetect(250,500,0.5);
     this.pDMid = new p5.PeakDetect(550,2000,0.5);
     this.pDHighMid = new p5.PeakDetect(2100,6000,0.7);
@@ -133,6 +133,51 @@ class Music{ // Plug n Play Audio player
     }
   }
 
+  callEffectsFromMusic(){ // Uses the energy of the music to queue visual effects
+
+    // Analyze bass frequencies
+    if(this.getFreq("bass")){
+
+      // Call bass effect
+      console.log("Bass!");
+
+    }
+
+    // Analyze low-mid frequencies
+    if(this.getFreq("lowMid")){
+
+      // Call lowMid effect
+
+    }
+
+    // Analyze mid frequencies
+    if(this.getFreq("mid")){
+
+      // Call mid effect
+
+
+    }
+
+    // Analyze high-mid frequencies
+    if(this.getFreq("highMid")){
+
+      // Call highMid-effect
+      console.log("Clap!");
+
+    }
+
+    // Analyze high frequencies
+    if(this.getFreq("treble")){
+
+      // Call treble effect
+
+    }
+
+    // Analyze overall level
+    this.amp.getLevel();
+
+  }
+
   getFreq(s){
 
     // Analyze the fft, required by p5.sound
@@ -155,7 +200,7 @@ class Music{ // Plug n Play Audio player
 
       case "lowMid":
 
-        // Update the peakdetect for bass
+        // Update the peakdetect for lowMid
         this.pDLowMid.update(this.fft);
 
         // If a peak is detected
