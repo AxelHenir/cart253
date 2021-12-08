@@ -3,7 +3,10 @@ class VDiagram{
   constructor(){
 
     this.cellAmount = 150; // Total cells in simulation
+
     this.jitterAmount = 0; // Jitter in diagram
+    this.cellStrokeWeight = 3; // Cell stroke weight
+    this.siteStrokeWeight = 3; // Site stroke weight
 
     this.activeCells = []; // The collection of cells actively being displayed
     this.enqueuedCells = []; // The collection of cells waiting to be displayed
@@ -33,8 +36,8 @@ class VDiagram{
       voronoiSite(this.activeCells[i].x,this.activeCells[i].y,this.activeCells[i].cellColor);
     }
 
-    // Handle jitter
-    this.handleJitter();
+    // Handle diagram effects (Jitter, Strokeweight, etc.)
+    this.diagramEffects();
 
     // "Calculate" the diagram, required by library.
     voronoi(1000,1000,true,true);
@@ -46,10 +49,59 @@ class VDiagram{
 
   }
 
-  handleJitter(){ // Decrements jitter
+  diagramEffects(){
+
     this.jitterAmount-=0.25;
     this.jitterAmount=constrain(this.jitterAmount,0,10);
     voronoiJitterFactor(this.jitterAmount);
+
+    this.cellStrokeWeight -= 0.05;
+    this.cellStrokeWeight = constrain(this.cellStrokeWeight,0,10);
+    voronoiCellStrokeWeight(this.cellStrokeWeight);
+
+    this.siteStrokeWeight -= 0.05;
+    this.siteStrokeWeight = constrain(this.siteStrokeWeight,0,10);
+    voronoiSiteStrokeWeight(this.siteStrokeWeight);
+
+    if (this.activeCells.length >= 1){
+
+      // Do color maintenance for all cells.
+      for(let i = 0; i<this.activeCells.length; i++){
+        this.activeCells[i].cellColor = color(hue(this.activeCells[i].cellColor),75,this.activeCells[i].cellBrightness);
+      }
+
+      for(let i = 0; i<this.enqueuedCells.length; i++){
+        this.enqueuedCells[i].cellColor = color(hue(this.enqueuedCells[i].cellColor),75,this.enqueuedCells[i].cellBrightness);
+      }
+
+      // Darken brightened cells
+      if(this.activeCells[0].cellBrightness > 65){
+
+        for(let i = 0; i<this.activeCells.length; i++){
+          this.activeCells[i].cellBrightness -= 0.25;
+        }
+
+        for(let i = 0; i<this.enqueuedCells.length; i++){
+          this.enqueuedCells[i].cellBrightness -= 0.25;
+        }
+
+      }
+
+      // Brighten darkened cells
+      else if(this.activeCells[0].cellBrightness < 65){
+
+        for(let i = 0; i<this.activeCells.length; i++){
+          this.activeCells[i].cellBrightness += 0.25;
+        }
+
+        for(let i = 0; i<this.enqueuedCells.length; i++){
+          this.enqueuedCells[i].cellBrightness += 0.25;
+        }
+
+      }
+
+    }
+
   }
 
   cleanupActiveCells(){ // Cleans up the city
@@ -109,7 +161,7 @@ class VDiagram{
 
   }
 
-  respawnCell(cell){ // Takes Cell as input and calls associated spawning function for it.
+  respawnCell(cell){ // Takes Cell as input and calls its associated spawning function.
     let b = cell.b;
     switch(b){
 
@@ -214,6 +266,55 @@ class VDiagram{
 
   // EFFECT QUEUES & SCENES ====================================================
 
+  add_Jitter(j=5){ // Adds j amount of jitter to the diagram
+
+    this.jitterAmount += j;
+    this.jitterAmount = constrain(this.jitterAmount,0,12);
+
+  }
+
+  whiteout(){ // Sharply brightens all cells
+
+    // Brighten all active cells
+    for(let i = 0 ; i<this.activeCells.length ; i++){
+      this.activeCells[i].cellBrightness += 25;
+    }
+
+    // Darken all enqueued cells
+    for(let i = 0 ; i<this.enqueuedCells.length ; i++){
+      this.enqueuedCells[i].cellBrightness += 25;
+    }
+
+  }
+
+  blackout(){ // Sharply darkens all cells
+
+    // Darken all active cells
+    for(let i = 0 ; i<this.activeCells.length ; i++){
+      this.activeCells[i].cellBrightness -= 25;
+    }
+
+    // Darken all enqueued cells
+    for(let i = 0 ; i<this.enqueuedCells.length ; i++){
+      this.enqueuedCells[i].cellBrightness -= 25;
+    }
+
+  }
+
+  thickenCellStroke(){ // Sharply increases the thickness of the cell's stroke
+
+    this.cellStrokeWeight += 3;
+    this.cellStrokeWeight = constrain(this.cellStrokeWeight, 0, 10);
+
+  }
+
+  thickenSiteStroke(){ // Sharply increases the thickness of the site's stroke
+
+    this.siteStrokeWeight += 3;
+    this.siteStrokeWeight = constrain(this.siteStrokeWeight, 0, 10);
+
+  }
+
   queue_Explosion(n){ // Passes n cells to FX_Explosion
     for (let i=0; i<n ; i++){
       if (this.reserveCells.length >= 1){
@@ -266,7 +367,7 @@ class VDiagram{
 
   }
 
-  changeScene(){ // Changes the BG to a new scene
+  newScene(){ // Generates and transitions to new scene
 
     // De-activate the current cells
     this.cullActiveCells();

@@ -7,7 +7,7 @@ let music =undefined; // music object
 let dequeueCell = false;
 
 //Lets the cells out slowly
-let dequeueCellInterval = setInterval(function(){dequeueCell = true;},500);
+let dequeueCellInterval = setInterval(function(){dequeueCell = true;},250);
 
 function preload() {
 
@@ -16,6 +16,7 @@ function preload() {
 function setup() {
 
   createCanvas(1000, 1000);
+  colorMode(HSB);
 
   // Music object contains audio-in for the demo.
   music = new Music();
@@ -24,7 +25,7 @@ function setup() {
   diagram = new VDiagram();
 
   //Maximum distance between jitters
-  voronoiJitterStepMax(100);
+  voronoiJitterStepMax(30);
   //Minimum distance between jitters
   voronoiJitterStepMin(15);
 
@@ -91,7 +92,7 @@ function keyPressed(){ // Checks all keys pressed
       break;
 
     case 81: // Q - Add cell
-      diagram.changeScene();
+      diagram.newScene();
       break;
 
     case 87: // W - Cull active cells

@@ -11,7 +11,8 @@ class Cell{
     this.active = true; // when true, cell is not ready to be cleaned up.
     this.respawn = false; // when true, respawn the cell when it gets cleaned up.
 
-    this.cellColor = color(random(150,200),50,200); // Color of cell
+    this.cellBrightness = 75;
+    this.cellColor = color(random(200,245),75,this.cellBrightness); // Color of cell
 
     this.theta = 0; // Angle from positive X axis
     this.radius = 0; // Radius

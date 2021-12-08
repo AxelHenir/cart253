@@ -139,7 +139,7 @@ class Music{ // Plug n Play Audio player
     if(this.getFreq("bass")){
 
       // Call bass effect
-      console.log("Bass!");
+      diagram.add_Jitter(6);
 
     }
 
@@ -162,7 +162,6 @@ class Music{ // Plug n Play Audio player
     if(this.getFreq("highMid")){
 
       // Call highMid-effect
-      console.log("Clap!");
 
     }
 
