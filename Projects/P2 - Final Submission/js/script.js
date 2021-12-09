@@ -7,7 +7,7 @@ let music =undefined; // music object
 let dequeueCell = false;
 
 //Lets the cells out slowly
-let dequeueCellInterval = setInterval(function(){dequeueCell = true;},250);
+let dequeueCellInterval = setInterval(function(){dequeueCell = true;},150);
 
 function preload() {
 
@@ -16,7 +16,7 @@ function preload() {
 function setup() {
 
   createCanvas(1000, 1000);
-  colorMode(HSB);
+  colorMode(HSB,360,100,100);
 
   // Music object contains audio-in for the demo.
   music = new Music();
@@ -28,6 +28,8 @@ function setup() {
   voronoiJitterStepMax(30);
   //Minimum distance between jitters
   voronoiJitterStepMin(15);
+
+  voronoiCellStroke(255);
 
 }
 

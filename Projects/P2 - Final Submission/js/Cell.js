@@ -11,8 +11,10 @@ class Cell{
     this.active = true; // when true, cell is not ready to be cleaned up.
     this.respawn = false; // when true, respawn the cell when it gets cleaned up.
 
-    this.cellBrightness = 75;
-    this.cellColor = color(random(200,245),75,this.cellBrightness); // Color of cell
+    this.cellHue = random(0,50);
+    this.cellSaturation = 50;
+    this.cellBrightness = 80;
+    this.cellColor = (this.cellHue,this.cellSaturation,this.cellBrightness); // Color of cell
 
     this.theta = 0; // Angle from positive X axis
     this.radius = 0; // Radius
@@ -47,6 +49,10 @@ class Cell{
         this.explosion();
         break;
 
+      case 5:
+        this.swerveDown();
+        break;
+
     }
   }
 
@@ -61,11 +67,11 @@ class Cell{
 
     // Expiration check
     if(this.x > 1100){
-      this.markForCleanup(true); // Respawn = true
+      this.markForCleanup();
     }
 
     // Behavior math
-    this.x+=random(1,3);
+    this.x+= (diagram.cellSpeed*2.5)+1;
     this.y = 75*sin(0.015*this.x)-(0.3*this.x)+this.oy+100;
   }
 
@@ -140,6 +146,19 @@ class Cell{
     // Increment radius, speed based on distance from center.
     this.radius+= map(this.radius,0,750,6,1);
 
+  }
+
+  // swerveDown - 5
+  swerveDown(){
+
+    // Expiration check
+    if(this.y > 1100){
+      this.markForCleanup();
+    }
+
+    // Behavior math
+    this.x = 100*cos(0.0125*this.y) + (0.3*this.y) + this.ox -300;
+    this.y += (diagram.cellSpeed*2.5) + 1 ;
   }
 
 }

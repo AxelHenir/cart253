@@ -23,9 +23,9 @@ class Music{ // Plug n Play Audio player
 
     // PeakDetect objects from p5.sound
     this.pDBass = new p5.PeakDetect(0,200,0.92);
-    this.pDLowMid = new p5.PeakDetect(250,500,0.5);
-    this.pDMid = new p5.PeakDetect(550,2000,0.5);
-    this.pDHighMid = new p5.PeakDetect(2100,6000,0.7);
+    this.pDLowMid = new p5.PeakDetect(250,500,0.90);
+    this.pDMid = new p5.PeakDetect(550,2000,0.75);
+    this.pDHighMid = new p5.PeakDetect(2100,6000,0.715);
     this.pDTreble = new p5.PeakDetect(6200,20000,0.5);
 
   }
@@ -139,7 +139,6 @@ class Music{ // Plug n Play Audio player
     if(this.getFreq("bass")){
 
       // Call bass effect
-      diagram.add_Jitter(6);
 
     }
 
@@ -147,6 +146,7 @@ class Music{ // Plug n Play Audio player
     if(this.getFreq("lowMid")){
 
       // Call lowMid effect
+      diagram.add_Jitter(8);
 
     }
 
@@ -154,7 +154,7 @@ class Music{ // Plug n Play Audio player
     if(this.getFreq("mid")){
 
       // Call mid effect
-
+      diagram.queue_Explosion(15);
 
     }
 
@@ -162,6 +162,8 @@ class Music{ // Plug n Play Audio player
     if(this.getFreq("highMid")){
 
       // Call highMid-effect
+      diagram.cellSpeed += 6;
+      diagram.cellSpeed = constrain(diagram.cellSpeed,0,6);
 
     }
 
@@ -173,6 +175,7 @@ class Music{ // Plug n Play Audio player
     }
 
     // Analyze overall level
+
     this.amp.getLevel();
 
   }

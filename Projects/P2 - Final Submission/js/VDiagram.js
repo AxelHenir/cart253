@@ -2,6 +2,8 @@ class VDiagram{
 
   constructor(){
 
+    this.cellSpeed = 0.5; // A value which manages the speed of effects
+
     this.cellAmount = 150; // Total cells in simulation
 
     this.jitterAmount = 0; // Jitter in diagram
@@ -51,56 +53,67 @@ class VDiagram{
 
   diagramEffects(){
 
-    this.jitterAmount-=0.25;
+    // Decrement cellSpeed
+    this.cellSpeed *= 0.95;
+    diagram.cellSpeed = constrain(diagram.cellSpeed,0,6);
+
+    // Reduce jitter
+    this.jitterAmount-=0.2;
     this.jitterAmount=constrain(this.jitterAmount,0,10);
     voronoiJitterFactor(this.jitterAmount);
 
-    this.cellStrokeWeight -= 0.05;
+    // Reduce cellStrokeWeight
+    this.cellStrokeWeight -= 0.15;
     this.cellStrokeWeight = constrain(this.cellStrokeWeight,0,10);
     voronoiCellStrokeWeight(this.cellStrokeWeight);
 
+    // Reduce siteStrokeWeight
     this.siteStrokeWeight -= 0.05;
-    this.siteStrokeWeight = constrain(this.siteStrokeWeight,0,10);
+    this.siteStrokeWeight = constrain(this.siteStrokeWeight,3,10);
     voronoiSiteStrokeWeight(this.siteStrokeWeight);
 
-    if (this.activeCells.length >= 1){
-
-      // Do color maintenance for all cells.
-      for(let i = 0; i<this.activeCells.length; i++){
-        this.activeCells[i].cellColor = color(hue(this.activeCells[i].cellColor),75,this.activeCells[i].cellBrightness);
-      }
-
-      for(let i = 0; i<this.enqueuedCells.length; i++){
-        this.enqueuedCells[i].cellColor = color(hue(this.enqueuedCells[i].cellColor),75,this.enqueuedCells[i].cellBrightness);
-      }
-
-      // Darken brightened cells
-      if(this.activeCells[0].cellBrightness > 65){
-
-        for(let i = 0; i<this.activeCells.length; i++){
-          this.activeCells[i].cellBrightness -= 0.25;
-        }
-
-        for(let i = 0; i<this.enqueuedCells.length; i++){
-          this.enqueuedCells[i].cellBrightness -= 0.25;
-        }
-
-      }
-
-      // Brighten darkened cells
-      else if(this.activeCells[0].cellBrightness < 65){
-
-        for(let i = 0; i<this.activeCells.length; i++){
-          this.activeCells[i].cellBrightness += 0.25;
-        }
-
-        for(let i = 0; i<this.enqueuedCells.length; i++){
-          this.enqueuedCells[i].cellBrightness += 0.25;
-        }
-
-      }
-
+    // Do color update for activeCells
+    for(let i = 0; i<this.activeCells.length; i++){
+      this.activeCells[i].cellColor = color(this.activeCells[i].cellHue,this.activeCells[i].cellSaturation,this.activeCells[i].cellBrightness);
     }
+
+    // Do color update for enqueuedCells
+    for(let i = 0; i<this.enqueuedCells.length; i++){
+      this.enqueuedCells[i].cellColor = color(this.enqueuedCells[i].cellHue,this.enqueuedCells[i].cellSaturation,this.enqueuedCells[i].cellBrightness);
+    }
+
+    // Darken brightened activeCells
+    for(let i = 0; i<this.activeCells.length; i++){
+      if(this.activeCells[i].cellSaturation > 50){
+        this.activeCells[i].cellSaturation -= 0.5;
+        this.activeCells[i].cellSaturation = constrain(this.activeCells[i].cellSaturation,50,100);
+      }
+    }
+
+    // Darken brightened enqueuedCells
+    for(let i = 0; i<this.enqueuedCells.length; i++){
+      if(this.enqueuedCells[i].cellSaturation > 50){
+        this.enqueuedCells[i].cellSaturation -= 0.5;
+        this.enqueuedCells[i].cellSaturation = constrain(this.enqueuedCells[i].cellSaturation,50,100);
+      }
+    }
+
+    // Brighten darkened activeCells
+    for(let i = 0; i<this.activeCells.length; i++){
+      if(this.activeCells[i].cellSaturation < 50){
+        this.activeCells[i].cellSaturation += 0.5;
+        this.activeCells[i].cellSaturation = constrain(this.activeCells[i].cellSaturation,0,50);
+      }
+    }
+
+    // Brighten darkened enqueuedCells
+    for(let i = 0; i<this.enqueuedCells.length; i++){
+      if(this.enqueuedCells[i].cellSaturation < 50){
+        this.enqueuedCells[i].cellSaturation += 0.5;
+        this.enqueuedCells[i].cellSaturation = constrain(this.enqueuedCells[i].cellSaturation,0,50);
+      }
+    }
+
 
   }
 
@@ -179,6 +192,10 @@ class VDiagram{
 
       case 3:
         this.BG_Vortex(cell);
+        break;
+
+      case 5:
+        this.BG_SwerveDown(cell);
         break;
 
     }
@@ -264,6 +281,21 @@ class VDiagram{
 
   }
 
+  BG_SwerveDown(c){ // Swervedown and evolution (5)
+
+    // Apply respawn math to cell.
+    c.x = random(350,1100); // swerveDown
+    c.y = -100; // swerveDown
+    c.ox = c.x; // swerveDown
+    c.b = 5 // swerveDown
+    c.respawn = true; // swerveDown (BG = respawn)
+    c.active = true;
+
+    // Push onto enqueuedCells
+    this.enqueuedCells.push(c);
+
+  }
+
   // EFFECT QUEUES & SCENES ====================================================
 
   add_Jitter(j=5){ // Adds j amount of jitter to the diagram
@@ -277,12 +309,14 @@ class VDiagram{
 
     // Brighten all active cells
     for(let i = 0 ; i<this.activeCells.length ; i++){
-      this.activeCells[i].cellBrightness += 25;
+      this.activeCells[i].cellSaturation -= 45;
+      //this.activeCells[i].cellSaturation += 25;
     }
 
-    // Darken all enqueued cells
+    // Brighten all enqueued cells
     for(let i = 0 ; i<this.enqueuedCells.length ; i++){
-      this.enqueuedCells[i].cellBrightness += 25;
+      this.enqueuedCells[i].cellSaturation -= 45;
+      //this.enqueuedCells[i].cellSaturation -= 55;
     }
 
   }
@@ -291,12 +325,12 @@ class VDiagram{
 
     // Darken all active cells
     for(let i = 0 ; i<this.activeCells.length ; i++){
-      this.activeCells[i].cellBrightness -= 25;
+      this.activeCells[i].cellSaturation += 45;
     }
 
     // Darken all enqueued cells
     for(let i = 0 ; i<this.enqueuedCells.length ; i++){
-      this.enqueuedCells[i].cellBrightness -= 25;
+      this.enqueuedCells[i].cellSaturation += 45;
     }
 
   }
@@ -355,6 +389,14 @@ class VDiagram{
     }
   }
 
+  queue_swerveDown(n){ // Passes n cells to BG_SwerveDown
+    for (let i=0; i<n ; i++){
+      if (this.reserveCells.length >= 1){
+        this.BG_SwerveDown(this.reserveCells.pop());
+      }
+    }
+  }
+
   dequeueCell(){ // Pushes cells from enqueuedCells to activeCells
 
     // Checks if there is an enqueued cell
@@ -376,7 +418,7 @@ class VDiagram{
     this.cullEnqueuedCells();
 
     // Randomly detemrine new BG
-    let scene = random([0,1,2,3]);
+    let scene = random([0,1,2,3,5]);
     switch(scene){
 
       case 0:
@@ -393,6 +435,10 @@ class VDiagram{
 
       case 3:
         this.queue_Vortex(25);
+        break;
+
+      case 5:
+        this.queue_swerveDown(25);
         break;
     }
 
