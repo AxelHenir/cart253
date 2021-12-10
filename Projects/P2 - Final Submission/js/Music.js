@@ -1,3 +1,6 @@
+// Music class - Responsible for playing and pausing music, analyzing frequencies and level of the music.
+
+
 class Music{ // Plug n Play Audio player
 
   constructor(){
@@ -154,7 +157,7 @@ class Music{ // Plug n Play Audio player
     if(this.getFreq("mid")){
 
       // Call mid effect
-      diagram.queue_Explosion(15);
+
 
     }
 
@@ -171,12 +174,12 @@ class Music{ // Plug n Play Audio player
     if(this.getFreq("treble")){
 
       // Call treble effect
+      diagram.queue_Explosion(15);
 
     }
 
     // Analyze overall level
-
-    this.amp.getLevel();
+    diagram.cellStrokeWeight = map(this.amp.getLevel(),0,1,0,8);
 
   }
 

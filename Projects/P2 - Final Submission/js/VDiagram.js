@@ -1,3 +1,15 @@
+// Diagram Class - Responsible for displaying the diagram and maintaining the cells' behaviors.
+
+// There are 2 "pools" and a Queue which manage each cell in the diagram.
+// The activeCells and reserveCells are the pools which hold cell objects.
+// Active cells are cells which are currently onscreen, ie: in the diagram LIVE.
+// Reserve cells are cells which COULD be added to the diagram.
+// The queue is the "waiting line" for cells to move from reserve to active.
+
+// The diagram class also handles the spawning conditions of cell objects.
+// Cells will evolve on their own but the diagram handles how, where and when they spawn.
+// The diagram also manages diagram-wide effects like jitter, border thickness, etc.
+
 class VDiagram{
 
   constructor(){
@@ -12,11 +24,13 @@ class VDiagram{
 
     this.activeCells = []; // The collection of cells actively being displayed
     this.enqueuedCells = []; // The collection of cells waiting to be displayed
-    this.reserveCells = []; // The collection of cells ready to be displayed
+    this.reserveCells = []; // The collection of cells that currently have no use
 
     for(let i = 0; i<this.cellAmount; i++){ // Populate reserve using cellAmount
       this.reserveCells.push(new Cell());
     }
+
+    this.currentColor = random(0,360);
 
   }
 
@@ -51,7 +65,7 @@ class VDiagram{
 
   }
 
-  diagramEffects(){
+  diagramEffects(){ // Handles the evolution of diagram effects: cellSpeed, jitter, strokeweight, color, brightness.
 
     // Decrement cellSpeed
     this.cellSpeed *= 0.95;
@@ -134,6 +148,7 @@ class VDiagram{
         // Check for respawn
         let c = this.reserveCells.pop();
 
+        // If the cell was set to respawn,
         if(c.respawn == true){
 
           // Respawn the cell. (Move this cell back to active)
@@ -199,6 +214,15 @@ class VDiagram{
         break;
 
     }
+  }
+
+  cycleColor(){ // Increments the current color
+
+    this.currentColor+=0.5;
+    if(this.currentColor >= 360){
+      this.currentColor = 0;
+    }
+
   }
 
 

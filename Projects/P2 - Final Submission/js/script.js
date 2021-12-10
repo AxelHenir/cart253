@@ -4,7 +4,7 @@
 
 let diagram = undefined; // Diagram object
 let music =undefined; // music object
-let dequeueCell = false;
+let dequeueCell = false; // Used to kno when to dequeue a cell and add it to active.
 
 //Lets the cells out slowly
 let dequeueCellInterval = setInterval(function(){dequeueCell = true;},150);

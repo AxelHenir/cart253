@@ -11,7 +11,7 @@ class Cell{
     this.active = true; // when true, cell is not ready to be cleaned up.
     this.respawn = false; // when true, respawn the cell when it gets cleaned up.
 
-    this.cellHue = random(0,50);
+    this.cellHue = random(200,210);
     this.cellSaturation = 50;
     this.cellBrightness = 80;
     this.cellColor = (this.cellHue,this.cellSaturation,this.cellBrightness); // Color of cell
