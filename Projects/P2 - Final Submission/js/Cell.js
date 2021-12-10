@@ -1,3 +1,12 @@
+// Cells are the moving parts of the diagram
+
+// Cells are birthed by the diagram overlord (spawned in) but they evolve in their own personal way.
+// Cells have attributes such as their position and color.
+// Attributes are qualities of the cell which are affected by its behavior.
+// A cell is given a designated behavior when it spawns and it tells it how to act in the diagram.
+// When a cell is finished its evolution, it gets maked for inactivity.
+// Diagram will see this mark and clean it up to maintain constant memory.
+
 class Cell{
 
   constructor(x=0,y=0){

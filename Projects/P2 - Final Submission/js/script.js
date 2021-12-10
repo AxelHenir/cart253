@@ -1,4 +1,8 @@
-// Alex Henri - CART 253 Project 2 Prototype
+// Alex Henri - CART 253 Project 2 Final Submission
+
+// This is the driver code for my generative audio visualizer.
+// This code requires VDiagram.js, Cell.js, Music.js, p5.sound.js, rhill-voronoi-core.js and p5.voronoi.js to function.
+// This code will orchstrate the program.
 
 "use strict";
 
@@ -31,7 +35,7 @@ function setup() {
   //Minimum distance between jitters
   voronoiJitterStepMin(15);
 
-  // white borders adn sites
+  // white borders and sites
   voronoiCellStroke(255);
   voronoiSiteStroke(255);
 

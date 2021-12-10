@@ -1,13 +1,17 @@
 // Music class - Responsible for playing and pausing music, analyzing frequencies and level of the music.
 
+// I have 5 demo tracks loaded with this class.
+// Music has a fucntion which reads the energy of the music and queues effects accordingly.
+// These are handled by 5 different Peakdetection objects set to different frequencies.
+// The level of the overall volume and mic volume are also able to set and/or queue effects.
 
 class Music{ // Plug n Play Audio player
 
   constructor(){
 
-    // music = current track selected
-    this.music=undefined;
-    this.currentSongName="N/A";
+
+    this.music=undefined; // music = current track selected
+    this.currentSongName="N/A"; // Current song name
 
     // My 5 demo songs
 
@@ -52,13 +56,13 @@ class Music{ // Plug n Play Audio player
 
   }
 
-  changeTracks(t){
+  changeTracks(t){ // t = which track to switch to.
 
     switch(t){
 
       case 1: // 1 = Play song 1
         this.currentSongName = "SEATBELTS - Rush";
-        if(this.music==undefined){ // check if first
+        if(this.music==undefined){ // check if first play
           this.music = this.song1; // Set music to selected song
           this.music.loop(); // Begin looping music
         }
@@ -73,7 +77,7 @@ class Music{ // Plug n Play Audio player
 
       case 2: // 2 = Play song 2
         this.currentSongName = "Glass Animals - Heat Waves";
-        if(this.music==undefined){ // check if first
+        if(this.music==undefined){ // check if first play
           this.music = this.song2; // Set music to selected song
           this.music.loop(); // Begin looping music
         }
@@ -88,7 +92,7 @@ class Music{ // Plug n Play Audio player
 
       case 3: // 3 = Play song 3
         this.currentSongName = "KAYTRANADA - Grey Area (ft. Mick Jensen)";
-        if(this.music==undefined){ // check if first
+        if(this.music==undefined){ // check if first play
           this.music = this.song3; // Set music to selected song
           this.music.loop(); // Begin looping music
         }
@@ -103,7 +107,7 @@ class Music{ // Plug n Play Audio player
 
       case 4: // 2 = Play song 2
         this.currentSongName = "Karma Fields - Dreams (ft. Shey Baba)";
-        if(this.music==undefined){ // check if first
+        if(this.music==undefined){ // check if first play
           this.music = this.song4; // Set music to selected song
           this.music.loop(); // Begin looping music
         }
@@ -118,7 +122,7 @@ class Music{ // Plug n Play Audio player
 
       case 5: // 3 = Play song 3
         this.currentSongName = "Denzel Curry, Gizzle, Bren Joy - Dynasties and Dystopia";
-        if(this.music==undefined){ // check if first
+        if(this.music==undefined){ // check if first play
           this.music = this.song5; // Set music to selected song
           this.music.loop(); // Begin looping music
         }
@@ -137,8 +141,9 @@ class Music{ // Plug n Play Audio player
   }
 
   pauseMusic(){
-    if(this.music!=undefined){
-      if(this.music.isPlaying()){
+
+    if(this.music!=undefined){ // Check if first play
+      if(this.music.isPlaying()){ // Check if music is playing
         this.music.pause(); // Pause music
       }
       else{
@@ -148,6 +153,10 @@ class Music{ // Plug n Play Audio player
   }
 
   callEffectsFromMusic(){ // Uses the energy of the music to queue visual effects
+
+    // This function uses the getFreq() function to see if, "At this frequency range, was there recently a hit of energy?"
+    // If there was, the effects in that code block execute.
+    // These can be the queueing effects in VDiagram.js or even its attributes directly.
 
     // Analyze bass frequencies
     if(this.getFreq("bass")){
@@ -236,7 +245,7 @@ class Music{ // Plug n Play Audio player
 
       case "mid":
 
-        // Update the peakdetect for bass
+        // Update the peakdetect for mid
         this.pDMid.update(this.fft);
 
         // If a peak is detected
@@ -250,7 +259,7 @@ class Music{ // Plug n Play Audio player
 
       case "highMid":
 
-        // Update the peakdetect for bass
+        // Update the peakdetect for highMid
         this.pDHighMid.update(this.fft);
 
         // If a peak is detected
@@ -264,7 +273,7 @@ class Music{ // Plug n Play Audio player
 
       case "treble":
 
-        // Update the peakdetect for bass
+        // Update the peakdetect for treble
         this.pDTreble.update(this.fft);
 
         // If a peak is detected

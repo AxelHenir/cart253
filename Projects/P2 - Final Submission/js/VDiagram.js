@@ -3,12 +3,12 @@
 // There are 2 "pools" and a Queue which manage each cell in the diagram.
 // The activeCells and reserveCells are the pools which hold cell objects.
 // Active cells are cells which are currently onscreen, ie: in the diagram LIVE.
-// Reserve cells are cells which COULD be added to the diagram.
+// Reserve cells are cells which COULD be added to the diagram. They're like backup cells in case we need more for the effect.
 // The queue is the "waiting line" for cells to move from reserve to active.
 
-// The diagram class also handles the spawning conditions of cell objects.
+// The diagram class also handles the spawning conditions of cell objects. BG_(EFFECT NAME) are example implementations.
 // Cells will evolve on their own but the diagram handles how, where and when they spawn.
-// The diagram also manages diagram-wide effects like jitter, border thickness, etc.
+// The diagram also manages diagram-wide effects like jitter, border thickness, evolution speed and more.
 
 class VDiagram{
 
@@ -35,7 +35,7 @@ class VDiagram{
 
   }
 
-  redraw(){ // Redraws the diagram
+  redraw(){ // MAIN FUNCTION - Updates and redraws the diagram, essentially printing the next frame of the animation.
 
     // Clear previous diagram
     voronoiClearSites();
@@ -134,7 +134,7 @@ class VDiagram{
 
   }
 
-  cleanupActiveCells(){ // Cleans up the city
+  cleanupActiveCells(){ // Cleans up the city: scans activeCells for cells which are ready to de-spawn.
 
     // Scans for inactive cells and removes them from active.
     for(let i=0; i<this.activeCells.length; i++){
@@ -193,7 +193,7 @@ class VDiagram{
 
   }
 
-  cullActiveCells(){ // Naturally stops the BG. (Sets all cells not to repsawn)
+  cullActiveCells(){ // Sets all active cells not to respawn.
 
     for(let i = 0; i<this.activeCells.length; i++){
       this.activeCells[i].respawn = false;
