@@ -81,7 +81,13 @@ class Cell{
     // Check for cleanup
     if(this.respawn == false){
 
-      this.markForCleanup();
+      // Decay animation, stray to exterior
+      this.radius += diagram.cellSpeed*1.5 +1;
+      if(this.radius >= 750){
+        this.markForCleanup();
+      }
+
+
     }
 
     // Update site position using polar coords
@@ -89,7 +95,9 @@ class Cell{
     this.y = this.radius*sin(this.theta) + this.oy; // Orbits y w/r/t origin y
 
     // Increment theta, angular velocity decreases with radius
-    this.theta+=0.015;
+    //this.theta += 0.015;
+
+    this.theta += diagram.cellSpeed*0.005 + 0.01;
 
   }
 
@@ -105,10 +113,10 @@ class Cell{
     this.y = this.radius*sin(this.theta) + 500; // Orbits y w/r/t origin y
 
     // Increment theta, angular velocity decreases with radius
-    this.theta+=map(this.radius,0,750,0.025,0.01);
+    this.theta+=diagram.cellSpeed*random(0.005,0.01) + 0.015;
 
     // Increment radius
-    this.radius+=0.5;
+    this.radius+=diagram.cellSpeed*0.6 + random(0.25,0.75);
 
   }
 
@@ -124,10 +132,12 @@ class Cell{
     this.y = this.radius*sin(this.theta) + this.oy; // Orbits y w/r/t origin y
 
     // Increment theta, angular velocity decreases with radius
-    this.theta+=map(this.radius,25,750,0.025,0.01);
+    this.theta-=diagram.cellSpeed*random(0.005,0.01) + 0.015;
+
 
     // Decrement radius
-    this.radius-=0.5;
+    //this.radius-=0.5;
+    this.radius-=diagram.cellSpeed*0.6 + random(0.25,0.75);
 
   }
 

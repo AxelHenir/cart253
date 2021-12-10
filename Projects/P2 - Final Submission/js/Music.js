@@ -17,6 +17,9 @@ class Music{ // Plug n Play Audio player
     this.song4=loadSound("assets/sounds/music/Karma Fields - Dreams.mp3");
     this.song5=loadSound("assets/sounds/music/Denzel Curry - Dynasties and Dystopia.mp3");
 
+    // P5 Microphone
+    this.mic = new p5.AudioIn();
+    this.mic.start();
 
     // Amplitude object from p5.sound
     this.amp = new p5.Amplitude();
@@ -36,16 +39,21 @@ class Music{ // Plug n Play Audio player
   displayMusicInfo(){ // Display the "now-playing"
 
     push();
-    textAlign(LEFT);
-    textSize(24);
+    rectMode(CENTER,CENTER);
     fill(0);
+    rect(width/2,10,width,20);
+    textAlign(LEFT);
+    textSize(12);
+    fill(255);
     noStroke();
-    text("Now playing: "+this.currentSongName, 25,50);
+    text("Now playing: "+this.currentSongName, 50,15);
+    text("Q = New scene   SPACE = Pause/Play    H = Close/Open Help", 500,15)
     pop();
 
   }
 
   changeTracks(t){
+
     switch(t){
 
       case 1: // 1 = Play song 1
@@ -123,6 +131,9 @@ class Music{ // Plug n Play Audio player
         break;
 
     }
+
+    // Set the input to the music (not the mic)
+    this.amp.setInput(this.music);
   }
 
   pauseMusic(){
@@ -178,8 +189,14 @@ class Music{ // Plug n Play Audio player
 
     }
 
-    // Analyze overall level
+    // Analyze music level
     diagram.cellStrokeWeight = map(this.amp.getLevel(),0,1,0,8);
+
+    // Analyze mic input level
+    diagram.siteStrokeWeight = map(this.mic.getLevel(),0,1,0,25);
+    if(this.mic.getLevel()>0.50){
+      diagram.queue_Explosion(3);
+    }
 
   }
 

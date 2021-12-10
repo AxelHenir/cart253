@@ -20,7 +20,7 @@ class VDiagram{
 
     this.jitterAmount = 0; // Jitter in diagram
     this.cellStrokeWeight = 3; // Cell stroke weight
-    this.siteStrokeWeight = 3; // Site stroke weight
+    this.siteStrokeWeight = 0; // Site stroke weight
 
     this.activeCells = []; // The collection of cells actively being displayed
     this.enqueuedCells = []; // The collection of cells waiting to be displayed
@@ -30,7 +30,8 @@ class VDiagram{
       this.reserveCells.push(new Cell());
     }
 
-    this.currentColor = random(0,360);
+    this.currentColor = Math.round(random(0,170));
+    this.targetColor = this.currentColor;
 
   }
 
@@ -83,8 +84,11 @@ class VDiagram{
 
     // Reduce siteStrokeWeight
     this.siteStrokeWeight -= 0.05;
-    this.siteStrokeWeight = constrain(this.siteStrokeWeight,3,10);
+    this.siteStrokeWeight = constrain(this.siteStrokeWeight,0,10);
     voronoiSiteStrokeWeight(this.siteStrokeWeight);
+
+    // Cycle the color if needed.
+    this.cycleColor();
 
     // Do color update for activeCells
     for(let i = 0; i<this.activeCells.length; i++){
@@ -128,7 +132,6 @@ class VDiagram{
       }
     }
 
-
   }
 
   cleanupActiveCells(){ // Cleans up the city
@@ -139,26 +142,49 @@ class VDiagram{
       // If a marked cell is found,
       if(this.activeCells[i].active == false){
 
+        // Create a temporary container for the marked cell.
+        let target = [];
+
         // Copy the cell from active to reserve.
-        this.reserveCells.push(this.activeCells[i]);
+        target.push(this.activeCells[i]);
 
         // Destroy the evidence.
         this.activeCells.splice(i,1);
 
         // Check for respawn
-        let c = this.reserveCells.pop();
-
-        // If the cell was set to respawn,
-        if(c.respawn == true){
+        if(target[0].respawn == true){
 
           // Respawn the cell. (Move this cell back to active)
-          this.respawnCell(c);
+
+          switch(target[0].b){
+
+            case 0:
+              this.BG_passBy(target[0]);
+              break;
+
+            case 1:
+              this.BG_Orbit(target[0]);
+              break;
+
+            case 2:
+              this.BG_Spiral(target[0]);
+              break;
+
+            case 3:
+              this.BG_Vortex(target[0]);
+              break;
+
+            case 5:
+              this.BG_SwerveDown(target[0]);
+              break;
+
+          }
 
         }
         else {
 
           // Otherwise, add it to reserve.
-          this.reserveCells.push(c);
+          this.reserveCells.push(target[0]);
         }
 
       }
@@ -171,7 +197,6 @@ class VDiagram{
 
     for(let i = 0; i<this.activeCells.length; i++){
       this.activeCells[i].respawn = false;
-      console.log(this.activeCells[i].respawn);
     }
 
   }
@@ -189,38 +214,33 @@ class VDiagram{
 
   }
 
-  respawnCell(cell){ // Takes Cell as input and calls its associated spawning function.
-    let b = cell.b;
-    switch(b){
+  cycleColor(){ // Adjusts the current color until it's the target color set by newScene()
 
-      case 0:
-        this.BG_passBy(cell);
-        break;
+    //
+    if(this.currentColor != this.targetColor){
+      this.currentColor +=0.25;
+      this.currentColor = this.currentColor%360;
 
-      case 1:
-        this.BG_Orbit(cell);
-        break;
+      for(let i = 0 ; i<this.activeCells.length; i++){
+        this.activeCells[i].cellHue += 0.25;
+        this.activeCells[i].cellHue = this.activeCells[i].cellHue%360;
 
-      case 2:
-        this.BG_Spiral(cell);
-        break;
+      }
 
-      case 3:
-        this.BG_Vortex(cell);
-        break;
+      for(let i = 0 ; i<this.enqueuedCells.length; i++){
+        this.enqueuedCells[i].cellHue += 0.35;
+        this.enqueuedCells[i].cellHue = this.enqueuedCells[i].cellHue%360;
 
-      case 5:
-        this.BG_SwerveDown(cell);
-        break;
+      }
 
-    }
-  }
+      for(let i = 0 ; i<this.reserveCells.length; i++){
+        this.reserveCells[i].cellHue += 0.5;
+        this.reserveCells[i].cellHue = this.reserveCells[i].cellHue%360;
 
-  cycleColor(){ // Increments the current color
+      }
 
-    this.currentColor+=0.5;
-    if(this.currentColor >= 360){
-      this.currentColor = 0;
+      //console.log("Current color ",this.currentColor,"target color",this.targetColor);
+
     }
 
   }
@@ -361,7 +381,7 @@ class VDiagram{
 
   thickenCellStroke(){ // Sharply increases the thickness of the cell's stroke
 
-    this.cellStrokeWeight += 3;
+    this.cellStrokeWeight += 0.5;
     this.cellStrokeWeight = constrain(this.cellStrokeWeight, 0, 10);
 
   }
@@ -443,26 +463,31 @@ class VDiagram{
 
     // Randomly detemrine new BG
     let scene = random([0,1,2,3,5]);
+
+    // Randomly determine new color
+    this.targetColor += Math.round(random(100,150));
+    this.targetColor = this.targetColor%360; // Cycles the current color
+
     switch(scene){
 
       case 0:
-        this.queue_passBy(25);
+        this.queue_passBy(50);
         break;
 
       case 1:
-        this.queue_Orbit(25);
+        this.queue_Orbit(50);
         break;
 
       case 2:
-        this.queue_Spiral(25);
+        this.queue_Spiral(50);
         break;
 
       case 3:
-        this.queue_Vortex(25);
+        this.queue_Vortex(50);
         break;
 
       case 5:
-        this.queue_swerveDown(25);
+        this.queue_swerveDown(50);
         break;
     }
 
